@@ -1,0 +1,133 @@
+Windows Network Repairs
+1. Restart Router && Modem. "Show caution as attackers may try to gain access, when you re-log in."
+
+2. Check Ethernet cables, connections.
+
+3. Check all Wifi-Connections.
+
+4. Run anti-virus/malware "Clam-AV", "RKHunter".
+
+5. Run Windows network Troubleshooter lol.
+
+6. "Check IP Connections" { 
+  1. Run Command Prompt as Administrator 
+  2. Type "ipconfig /all" or "netstat -a" to view all connections
+  3. To reset you IP configuration {
+    1. Type netsh winsock reset.
+    2. netsh int ip reset
+    3. ipconfig /release
+    4. ipconfig /renewn the
+    5. After running these commands reset your "System".}
+    
+7. Check firewall rules for interfearing rulesets/programs
+
+8. Check for "System" and "Driver" updates {
+  1. Right-click on the "Start" button and select "Device Manager".
+  2. Expand the "Network Adapters" category.
+  3. Right-click on "Network Adapters", and select "Update Drivers".
+  4. Choose "Search Automatically for updated driver software".}
+  
+9. Now if problem still occurs, lets clean the "Network" {
+  1. In the terminal try "ipconfig /flushdns".
+  2. Run "netsh winsock reset".
+  3. Run "netsh int ip reset".
+  4. After running these commans, reset your system.}
+  
+10. If problems are still occuring we will begin "System Repairs/Cleaning". {
+  1. Disk Cleanup [ Run "cleanmgr" in terminal, select "Drive og your choice".]
+  2. System File Checker/Repair [ Run "sfc /scannow -r -f" on drive of your choice.]
+  3. Deployment Image Servicing & Management Tool. [ Run "DISM /Online /Cleanup-Image /RestoreHealth".]
+  4. Check Disk [ Run "chkdsk /f /r".]
+  5. Restart your "System".}
+  
+11. Configuring for "netsh" {
+  1. netsh winsock reset
+  2. netsh winsock show catalog
+  3. netsh winsock show protocols}
+  4. netsh advfirewall firewall add rule name="<Rule Name>" dir=in action=allow protocol=TCP localport=<Port>
+  5. netsh advfirewall firewall add rule name"<Rule Name>" dir=out action=allow protocol=TCP localport=<Port>
+  6. netsh advfirewall firewall delete rule name="<Rule Name>"
+  7. netsh advfirewall firewall show state
+  8. netsh advfirewall firewall show listening
+  9. netsh interface portproxy add v4tov4 listenport=<Port> listenaddress=<Host> connectport=<Remote Port>
+     connectaddress=<RemoteHost>
+  10. netsh interface portproxy delete v4tov4 listenport=<Local port> listenaddress=<Local Addy>
+  11. netsh interface portproxy reset
+  12. netsh wlan show networks
+  
+12.Using "netstat" {
+  1. Primary Tool for displaying "Network Connections" {
+    ICMP, IGMP, TCP, UDP}
+  2. Try "netstat -a"
+  3. "netstat -n"
+  4. "netstat -o"
+  5. "netstat -p"
+  6. "netstat -q"
+  7. "netstat -ano"
+  8. "netstat -b"}
+  
+13. Connecting to new "Networks" {
+  1. Run "netsh wlan show networks".
+  2. Try "netsh wlan connect name="<SSID of network>" password="<Wi-fi password>" ssid="<SSID of the network>"
+  3. If "network" is saved "netsh wlan connect name="<Profile Name>"
+  4. Open Networks "netsh wlan connect name="Open Public wifi" ssid="Open wifi"
+  
+14. Connecting to a "VPN" {
+  1. netsh vpn show all
+  2. Specific connection "netsh vpn connect name="<Name of VPN>"
+  3. Connecting to a VPN with Credentials "netsh vpn connect name="<Name of connection>" user="<Username>"
+     password="<Password>"
+  4. Disconnecting "netsh vpn disconnect name-"<Name of the connection>"
+  
+15. Enabling or Disabling Network Adapters {
+  1. Run "netsh interface show interface"
+  2. Run "netsh interface set interface "<Interface Name>" enable
+  3. Disabling Network Adapters "netsh interface set interface "<Interface Name>" disable
+  
+16. Configuring Static IP addys {
+  1. Setting a Static IPv4 "netsh interface ip set address name="<Interface Name>" static <IP> <Subnet Mask>
+     <Default Gateway>
+     
+17. Setting DNS Servers {
+  1. netsh interface ip add dns name="<Interface Name>" address=<DNS Server 1> index=1
+     netsh interface ip add dns name="<Interface Name>" address=<DNS Server 2> index=2
+     
+18. Switching to DHCP "netsh interface ip set address name="<Interface Name>" source=dhcp"
+     "netsh interface ip set dns name="<Interface Name>" source=dhcp"
+
+19. "net use"
+  1. Maps a Network, connections, displays data.
+  2. Basic Syntax
+     net use [drive_letter | device_name] [\ \computer_name\share_name[\volume]] [/user:[do main_name\]user_name
+     [password | *]] [/savecred] [/persistent:{yes | no}] net use [/delete [drive_letter | \\computer_name]] 
+     [/persistent:{yes | no}]
+  3. IF you type "net use" it will display all Network Resources.
+  4. Local Drives are mapped to network shares (Z: is connected to \Server01\Data)
+  5. Network devices such as "printers" are located (\PRINTSERVER\LaserJet)
+  6. Connecting to a "Network Share Drive"
+    1. net use <drive_letter>: \\<computer_name>\<share_name> [/user: [<domain_name>\]<user_name> [<password> | *]]
+       [/savecred] [/persistent:{yes | no}]
+  7. Maping 
+    1. net use P:\\SERVER02\Public /persistent:yes
+    2. Or net use Z:\\FILESERVER\Data /user:guest
+    3. Or try net use S:\\MYPC\SharedDocs /user:Administrator * /persistent:no
+    4. Backing Up to Drive
+      1. "net use B:\\555.555.5.55\Backup /savecred /persistent:yes
+    5. Connect to a shared Printer
+      1. "net use \\<Computer_name> [/user: [<domain_name>\]<user_name> [<password> | *]] [/persistent:{yes | no}]
+    6. Connecting to a HP "net use \\PRINTSERV\HP LaserJet /persistent:yes
+    7. Disconnecting from shares or printers
+      1. netuse <drive_letter>: /delete
+      2. net use \\<computer_name> /delete
+      3. net use P: /delete
+      4. net use \\PRINTSERV\HP LaserJet /delete
+    8. Managing Persistence
+      1. Set all connections "net use /persistent:yes
+      2. Set to off "net use /persistent:no
+      3. List current persistence "net use /persistent
+
+20. Ipconfig commands { /release, /renew, /flushdns, /displaydns, /registerdns.}
+21. Arp {
+  1. arp -a [inet_addy
+
+     
