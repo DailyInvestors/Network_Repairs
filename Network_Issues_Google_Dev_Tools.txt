@@ -1,0 +1,56 @@
+Network Issues "Google Dev Tools"
+
+1. Supported Properties {
+"cookie-domain. Show the resources that set a specific cookie domain."
+
+"cookie-name. Show the resources that set a specific cookie name."
+
+"cookie-path. Show the resources that set a specific cookie path."
+
+"cookie-value. Show the resources that set a specific cookie value."
+
+"domain. Only display resources from the specified domain. You can use a wildcard character (*) to include multiple domains. For example, *.com displays resources from all domain names ending in .com. DevTools shows a populates the autocomplete drop-down menu with all of the domains it has encountered."
+
+"has-overrides. Show requests that have overridden content, headers, any overrides (yes), or no overrides (no). You can add the corresponding Has overrides column to the request table."
+
+"has-response-header. Show the resources that contain the specified HTTP response header. DevTools populates the autocomplete drop-down with all of the response headers that it has encountered."
+
+"is. Use is:running to find WebSocket resources.
+larger-than. Show resources that are larger than the specified size, in bytes. Setting a value of 1000 is equivalent to setting a value of 1k."
+
+"method. Show resources that were retrieved over a specified HTTP method type. DevTools populates the autocomplete drop-down with all of the HTTP methods it has encountered."
+
+"mime-type. Show resources of a specified MIME type. DevTools populates the autocomplete drop-down with all MIME types it has encountered."
+
+"mixed-content. Show all mixed content resources (mixed-content:all) or just the ones that are displayed (mixed-content:displayed)."
+
+"priority. Show resources whose priority level matches the specified value."
+
+"resource-type. Show resources of a resource type, for example, image. DevTools populates the autocomplete drop-down with all resource types it has encountered."
+
+"response-header-set-cookie. Show raw Set-Cookie headers in the Issues tab. Malformed cookies with incorrect Set-Cookie headers will be flagged in the Network panel."
+
+"scheme. Show resources retrieved over unprotected HTTP (scheme:http) or protected HTTPS (scheme:https)."
+
+"set-cookie-domain. Show the resources that have a Set-Cookie header with a Domain attribute that matches the specified value. DevTools populates the autocomplete with all of the cookie domains that it has encountered."
+
+"set-cookie-name. Show the resources that have a Set-Cookie header with a name that matches the specified value. DevTools populates the autocomplete with all of the cookie names that it has encountered."
+
+"set-cookie-value. Show the resources that have a Set-Cookie header with a value that matches the specified value. DevTools populates the autocomplete with all of the cookie values that it has encountered."
+
+"status-code. Only show resources whose HTTP status code match the specified code. DevTools populates the autocomplete drop-down menu with all of the status codes it has encountered."
+
+"url. Show the resources that have a url matching the specified value."
+}
+
+2. Viewing Request Logs: {
+Parser. Chrome's HTML parser.
+Redirect. An HTTP redirect.
+Script. A JavaScript function.
+Other. Some other process or action, such as navigating to a page using a link or entering a URL in the address bar.
+Size. The combined size of the response headers plus the response body, as delivered by the server.
+
+Time. The total duration, from the start of the request to the receipt of the final byte in the response.
+
+Waterfall. A visual breakdown of each request's activity.
+}
