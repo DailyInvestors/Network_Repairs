@@ -1,0 +1,105 @@
+import socket
+import logging
+import time
+from datetime import datetime
+
+# --- Configuration ---
+HOST = '127.0.0.1'  # Localhost
+PORT_RANGE = range(1, 1025)  # Common ports from 1 to 1024
+TIMEOUT = 1  # Seconds to wait for a connection
+LOG_FILE = 'port_scan.log'
+SCAN_INTERVAL_HOURS = 1 # Not used by the script directly, but indicates desired scheduling
+
+# --- Logging Setup ---
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename=LOG_FILE,
+    filemode='a' # Append to the log file
+)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logging.getLogger().addHandler(console_handler)
+
+def scan_port(host, port, timeout):
+    """
+    Attempts to connect to a given host and port.
+    Returns True if the port is open, False otherwise.
+    """
+    try:
+        # Create a socket object
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+
+        # Attempt to connect
+        result = sock.connect_ex((host, port)) # connect_ex returns an error indicator
+
+        if result == 0:
+            return True
+        else:
+            return False
+    except socket.gaierror:
+        logging.error(f"Hostname could not be resolved: {host}")
+        return None # Indicate an error
+    except socket.error as e:
+        logging.error(f"Socket error when scanning {host}:{port} - {e}")
+        return None # Indicate an error
+    finally:
+        sock.close()
+
+def perform_full_service_scan(host, port_range, timeout):
+    """
+    Performs a full service scan on the specified host for a given port range.
+    Logs open ports and basic service identification.
+    """
+    logging.info(f"--- Starting Full Service Scan on {host} at {datetime.now()} ---")
+    open_ports = []
+
+    for port in port_range:
+        status = scan_port(host, port, timeout)
+        if status is True:
+            try:
+                # Attempt to get service name (best effort)
+                service_name = socket.getservbyport(port, 'tcp')
+                logging.info(f"Port {port} OPEN - Service: {service_name}")
+                open_ports.append({'port': port, 'service': service_name})
+            except OSError:
+                logging.info(f"Port {port} OPEN - Service: Unknown")
+                open_ports.append({'port': port, 'service': 'Unknown'})
+        elif status is False:
+            logging.debug(f"Port {port} CLOSED")
+        # If status is None, an error occurred and it's already logged by scan_port
+
+    logging.info(f"--- Scan Finished on {host}. Found {len(open_ports)} open ports. ---")
+    if open_ports:
+        logging.info("Open Ports Summary:")
+        for p in open_ports:
+            logging.info(f"  Port: {p['port']}, Service: {p['service']}")
+    return open_ports
+
+def main():
+    """
+    Main function to run the port scan.
+    This function will be executed by the scheduler.
+    """
+    logging.info("Script started for hourly scan.")
+    perform_full_service_scan(HOST, PORT_RANGE, TIMEOUT)
+    logging.info("Script finished.")
+
+if __name__ == "__main__":
+    main()
+
+    # --- For demonstration, not for production scheduling ---
+    # To truly perform hourly scans, you would use cron (Linux/macOS)
+    # or Task Scheduler (Windows). This loop is just to show how
+    # you might structure a continuous loop if this were a long-running daemon.
+    # It's generally NOT recommended for hourly scans as a simple Python script
+    # because it ties up a process and isn't resilient to restarts.
+
+    # print(f"\nThis script is designed to be run hourly by a system scheduler (e.g., cron).")
+    # print(f"To simulate hourly scans within Python (not recommended for production):")
+    # print(f"  while True:")
+    # print(f"    time.sleep({SCAN_INTERVAL_HOURS * 3600})")
+    # print(f"    main()")
+    # print(f"The recommended way is to use system tools for scheduling.")
