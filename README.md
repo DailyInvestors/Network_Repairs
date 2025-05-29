@@ -5,4 +5,4 @@ Description: Windows Network Tools, Python Tools, Google Tools, Patchs for all. 
 
 
 Windows Administration Binaries { 
-lusrmgr.msc, services.msc, secpol.msc, eventvwr.msc, regedit.msc, gpedit.msc, control.exe, ncpa.cpl, dislmgmt.msc} # These may be if use to view Key Areas in a Windows System.
+lusrmgr.msc, services.msc, secpol.msc, eventvwr.msc, regedit.msc, gpedit.msc, control.exe, ncpa.cpl, dislmgmt.msc} # These may be of use to view Key Areas in a Windows System.
