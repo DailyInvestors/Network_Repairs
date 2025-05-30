@@ -1,0 +1,45 @@
+Description: Linux Firewall "Iptables", one of the best network guards 
+
+Installation: Must be on Linux.
+sudo apt install iptables
+
+
+Rule Sets:
+1. We must always flush the network before applying.
+sudo iptables -F
+sudo iptables -X
+sudo iptables -Z
+
+2. Next we have to setup the default rules.
+sudo iptables -P INPUT DROP
+sudo iptables -P OUTPUT ACCEPT
+
+
+3. OPTIONAL: This rule will allow any connections that were previously connected.
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED, RELATED -j ACCEPT
+
+4. Lo or loopback interface, is used for communication with the system.
+sudo iptables -A INPUT -i lo -j ACCEPT 
+sudo iptables -A OUTPUT -o lo -j ACCEPT 
+
+5. Allow outgoing Traffic 
+sudo iptables -A OUTPUT -j ACCEPT
+
+6. Allow incoming HTTP
+sudi iptables -A INPUT -p tcp --dport 80 -j ACCEPT 
+
+7. Allow incoming HTTPS
+sudi iptables -A input -p tcp --dport 443 -j ACCEPT 
+
+NOTE: All ports have both Tcp and UDP. Apply rules to both sets.
+
+
+8. Log All Dropped Connections 
+sudo iptables -A INPUT -m limit --limit 5/min -j LOG --log-prefix"IPTables-Dropped: " --log-level 7
+
+
+9. There are several ways to save these rule sets. First you can update and create a config file. Or install 
+sudo apt-get install netfilter-persistent save
+
+
+There are tons of more rules, forwarding requests, tunnels, proxies. However the basics are the fundamentals to ensure are ran on Any System.
