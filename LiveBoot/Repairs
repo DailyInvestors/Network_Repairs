@@ -1,0 +1,25 @@
+Repairing with a Live Boot USB
+
+Description: This is a Linux Recovery Process to regain Control Of a Compromised System.
+
+Requirements: Linux on USB
+
+Command Prompt:
+1. Run system commands.
+1. Lsblk
+2. sudo e2fsck
+3. sudo mkdir /mnt/yoursystem
+4. sudo mount "file system" /mnt/yoursystem/dev
+5. sudo mount -o bind /dev /mnt/yoursystem/dev
+6. sudo mount -t proc /proc /mnt/yoursystem/proc
+7.sudo mount -t sysfs /sys /mnt/yoursystem/sys
+8. Mount any other Partitions
+9. sudo chroot /mnt/yoursystem /bin/bash
+10. Inside your Shell now
+11. tree /home
+12. Check All Logs
+13. rsync/tar Backup before and After. May catch your attacker or cause.
+
+
+Displaying My Knowledge, that Can Help Millions Out. Got me put of the zsaem Cryoto Locals that Millions of Businesses fell and paid after.
+Daily
