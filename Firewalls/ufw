@@ -1,0 +1,32 @@
+Description: UFW is the simple form of iptables. Both used together can probide valuable Security that Microsoft and Google can not offer. With Cyber Attacks on the Rise. Linux is a essential for any IOT Device.
+
+
+Installation: sudo apt install ufw. This can vary on linux models.
+
+1. If pre-installed, run
+sudo ufw reset
+
+2. Default Policies 
+sudo ufw default deny incoming 
+sudi ufw default allow outgoing
+
+3. Deny incoming ssh connections.
+sudi ufw deny shh
+
+Note: Their are tons of different rule sets, and strategies. These are basic examples for Security.
+
+4. To enable.
+sudo ufw enable
+
+5. Verify status.
+sudo ufw status verbose 
+
+Note: You can enable ufw as a system process, for persistenence.
+sudo systemctl enable ufw
+sudo systemctl start ufw
+
+6. To view system status.
+systemctl staus ufw
+
+
+Note: If anyone needs help, feel free to ask for support.
