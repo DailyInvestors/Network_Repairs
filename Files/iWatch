@@ -1,0 +1,26 @@
+Description: A Linux File Monitoring Tool.
+
+
+Installation: 
+sudo apt install iWatch
+#May vary per linux model 
+
+Note: Their are a variety of commands and styles. We will be covering it as a System Background Process.
+
+1. Depends on iWatch version, you may need to edit the config.
+sudo nano /etc/iwatch/iwatch.xml
+
+2. Start System Process.
+sudo systemctl start iwatch
+
+3. Enable.
+sudo systemctl enable iwatch
+
+4. Verify Status.
+systemctl status iwatch
+
+5. View Logs.
+sudo journalctl -u iwatch -F
+
+
+This is the easiest way to ensure it is covering your entire system, that is allowed by the IOT manufacturer.
