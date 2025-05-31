@@ -1,0 +1,76 @@
+Description: Basic PHP Token/Key Creation for Password Lockout and or Retrieval.
+
+
+
+Requirements: PHP/SQL.
+
+Note: Can be automated.
+
+
+
+
+
+<?php
+
+// Simulate database connection (using PDO for security)
+class Database {
+    private $pdo;
+    public function __construct() { /* ... (same as previous example) ... */ }
+    public function getConnection() { return $this->pdo; }
+}
+
+// Function to generate a secure random token
+function generateSecureToken(int $length = 32): string {
+    return bin2hex(random_bytes($length)); // 32 bytes = 64 hex chars
+}
+
+// --- Logic for Generating and Registering a Password Reset Token ---
+
+// This would be triggered when a user submits their email for a password reset.
+// Assume $user_id is found after validating the email address.
+$user_id = 123; // Example user ID
+
+try {
+    $db = new Database();
+    $pdo = $db->getConnection();
+
+    // 1. Generate the reset token (our "key")
+    $reset_token = generateSecureToken();
+
+    // 2. Calculate expiration time (e.g., 1 hour from now)
+    $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    // 3. Invalidate any existing tokens for this user to prevent multiple active tokens
+    $stmt_delete = $pdo->prepare("DELETE FROM password_resets WHERE user_id = ?");
+    $stmt_delete->execute([$user_id]);
+
+    // 4. Register (store) the new token in the database
+    $stmt_insert = $pdo->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)");
+    $stmt_insert->execute([$user_id, $reset_token, $expires_at]);
+
+    // Success! Now, you would typically email this $reset_token to the user.
+    echo "Password reset token generated and stored for user ID: " . $user_id . "<br>";
+    echo "Token (for demonstration - DO NOT display in real app!): " . htmlspecialchars($reset_token) . "<br>";
+    echo "Expires At: " . htmlspecialchars($expires_at) . "<br>";
+
+} catch (PDOException $e) {
+    echo "Error generating reset token: " . $e->getMessage();
+}
+
+// --- Later, when the user clicks the reset link: ---
+// 1. User provides token from email and new password.
+// 2. Validate token:
+//    $token_from_url = $_GET['token'] ?? '';
+//    $stmt_check = $pdo->prepare("SELECT user_id, expires_at FROM password_resets WHERE token = ?");
+//    $stmt_check->execute([$token_from_url]);
+//    $token_data = $stmt_check->fetch();
+//    if ($token_data && strtotime($token_data['expires_at']) > time()) {
+//        // Token is valid and not expired. Allow password reset.
+//        // Then, delete the token from the database after use.
+//        $stmt_delete_used = $pdo->prepare("DELETE FROM password_resets WHERE token = ?");
+//        $stmt_delete_used->execute([$token_from_url]);
+//    } else {
+//        // Token invalid or expired.
+//    }
+
+?>
