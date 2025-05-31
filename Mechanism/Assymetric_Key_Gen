@@ -1,0 +1,95 @@
+Description: PHP Assymetric Key Generation.
+
+Requirements: PHP
+
+<?php
+
+// Function to generate an RSA key pair
+// Default to 2048-bit keys, which is a common secure size.
+function generateRsaKeyPair(int $bits = 2048): array {
+    $config = [
+        "digest_alg" => "sha512",
+        "private_key_bits" => $bits,
+        "private_key_type" => OPENSSL_KEYTYPE_RSA,
+    ];
+
+    // Generate a new private and public key pair
+    $res = openssl_pkey_new($config);
+    if ($res === false) {
+        throw new RuntimeException("Failed to generate RSA key pair: " . openssl_error_string());
+    }
+
+    // Export the private key
+    openssl_pkey_export($res, $private_key_pem);
+
+    // Get the public key details
+    $public_key_details = openssl_pkey_get_details($res);
+    $public_key_pem = $public_key_details['key'];
+
+    return [
+        'private_key' => $private_key_pem,
+        'public_key' => $public_key_pem,
+    ];
+}
+
+// --- Main Logic for Generating and Using an RSA Key Pair ---
+
+try {
+    $key_pair = generateRsaKeyPair(2048);
+    $private_key = $key_pair['private_key'];
+    $public_key = $key_pair['public_key'];
+
+    echo "<h2>RSA Key Pair Generated!</h2>";
+    echo "<p><strong>Private Key (keep secret!):</strong></p><pre>" . htmlspecialchars($private_key) . "</pre>";
+    echo "<p><strong>Public Key (can be shared):</strong></p><pre>" . htmlspecialchars($public_key) . "</pre>";
+
+    // --- Example Usage 1: Digital Signing ---
+    $data_to_sign = "This message is authentic and hasn't been tampered with.";
+    $signature = '';
+
+    // Sign the data with the private key
+    if (openssl_sign($data_to_sign, $signature, $private_key, OPENSSL_ALGO_SHA256)) {
+        echo "<h3>Digital Signature Example:</h3>";
+        echo "<p>Original Data: " . htmlspecialchars($data_to_sign) . "</p>";
+        echo "<p>Signature (base64): " . base64_encode($signature) . "</p>";
+
+        // Verify the signature with the public key
+        $verification_result = openssl_verify($data_to_sign, $signature, $public_key, OPENSSL_ALGO_SHA256);
+
+        if ($verification_result === 1) {
+            echo "<p style='color: green;'>Signature Verified: Data is authentic!</p>";
+        } elseif ($verification_result === 0) {
+            echo "<p style='color: red;'>Signature Verification Failed: Data tampered or wrong key!</p>";
+        } else {
+            echo "<p style='color: orange;'>Signature Verification Error: " . openssl_error_string() . "</p>";
+        }
+    } else {
+        echo "<p style='color: red;'>Failed to sign data: " . openssl_error_string() . "</p>";
+    }
+
+    // --- Example Usage 2: Asymmetric Encryption (less common for large data due to performance) ---
+    $message_to_encrypt = "Only the private key holder should read this.";
+    $encrypted_message = '';
+
+    // Encrypt with the public key (only the private key can decrypt)
+    if (openssl_public_encrypt($message_to_encrypt, $encrypted_message, $public_key)) {
+        echo "<h3>Asymmetric Encryption Example:</h3>";
+        echo "<p>Original Message: " . htmlspecialchars($message_to_encrypt) . "</p>";
+        echo "<p>Encrypted Message (base64): " . base64_encode($encrypted_message) . "</p>";
+
+        $decrypted_message = '';
+        // Decrypt with the private key
+        if (openssl_private_decrypt($encrypted_message, $decrypted_message, $private_key)) {
+            echo "<p>Decrypted Message: " . htmlspecialchars($decrypted_message) . "</p>";
+        } else {
+            echo "<p style='color: red;'>Failed to decrypt message: " . openssl_error_string() . "</p>";
+        }
+    } else {
+        echo "<p style='color: red;'>Failed to encrypt message: " . openssl_error_string() . "</p>";
+    }
+
+
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
+?>
