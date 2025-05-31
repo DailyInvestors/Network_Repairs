@@ -1,0 +1,55 @@
+Description: Ssh is a Transfer, Repair Tool. We can use this through a Variety of ways. 
+
+
+
+
+
+
+
+
+SSH Key: <user-home>/.ssu/authorized_keys
+      : -users edit system files-
+      : /etc/ssh/sshd_config
+      : ssh username@hostname
+      Copy Files: scp local_file remote_user@remote_host:remote_directory
+     Remote: ssh username@hostname command
+    Configure: ssh-keygen -t rsa
+ssh-copy-id username@hostname
+   Process: nmap -sV -p22 hostname
+   Scan: ssh-scan hostname
+ MetaSploit: msfconsole
+search ssh
+Custom Script Vuln: #!/bin/bash
+
+# Check if SSH is running
+if ssh -o BatchMode=yes -o ConnectTimeout=1 hostname 2>/dev/null; then
+  echo "SSH is running on $hostname"
+
+  # Check for weak passwords
+  if grep -q "password authentication" /etc/ssh/sshd_config; then
+    echo "Weak password authentication is enabled"
+  fi
+
+  # Check for root login
+  if grep -q "PermitRootLogin yes" /etc/ssh/sshd_config; then
+    echo "Root login is enabled"
+  fi
+
+  # Check for SSH key-based authentication
+  if grep -q "PubkeyAuthentication yes" /etc/ssh/sshd_config; then
+    echo "SSH key-based authentication is enabled"
+  fi
+
+  # Check for SSH protocol version
+  ssh -o Protocol 2 hostname 2>/dev/null && echo "SSH protocol version 2 is supported" || echo "SSH protocol version 2 is not supported"
+else
+  echo "SSH is not running on $hostname"
+fi
+1.Ssh Server: pkg install Openssh
+2. passwd
+
+
+
+Note: Will Post more on here or nee Files periodically. 
+Thank You. 
+
