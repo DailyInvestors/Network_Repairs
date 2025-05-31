@@ -1,0 +1,19 @@
+Description: A basic SQL command to create a new key for Authentication.
+
+
+Requirements: MySQL, PostgreSQL.
+
+
+
+
+
+
+CREATE TABLE password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE, -- The generated "key"
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
