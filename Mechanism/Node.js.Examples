@@ -1,0 +1,411 @@
+Description: Node.js Key and Token Generation techniques.
+
+
+Requirements: 
+Node.js 
+Database Depends on Mechanisms.
+npm Package for your database interactions.
+npm Package for Handling the virtual environment.
+
+
+Installation:
+1. Create a project folder
+mkdir js-key-examples
+cd js-key-examples
+
+2. Initialize Node.js project
+npm init -y
+
+3. Install database driver (choose one, e.g., 'pg' for PostgreSQL)
+npm install pg dotenv
+# OR for MySQL:
+# npm install mysql2 dotenv
+
+4. You will need a .enc file in the root of your Project for the Database Credentials.
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=your_user
+DB_PASSWORD=database_password
+DB_NAME=your_database_name
+
+
+EXAMPLE 1: Basic Unique ID Generation for a Password Reset Token.
+
+Scenario: A client requests a Password Reset.
+
+Schema: Both PHP and SQL wil be the same.
+
+1:1.
+CREATE TABLE password_resets (
+    id SERIAL PRIMARY KEY, -- Use SERIAL for PostgreSQL, AUTO_INCREMENT for MySQL
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL, -- Use TIMESTAMP for PostgreSQL, DATETIME for MySQL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+1:2. With JavaScript 
+
+// server.js (or a route handler file)
+
+require('dotenv').config(); // Load environment variables
+
+// Use 'pg' for PostgreSQL, 'mysql2' for MySQL
+const { Pool } = require('pg'); // For PostgreSQL
+// const mysql = require('mysql2/promise'); // For MySQL
+
+// Database Connection Pool (PostgreSQL example)
+const pool = new Pool({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+});
+
+// // MySQL Connection (uncomment if using MySQL)
+// const connection = mysql.createPool({
+//     host: process.env.DB_HOST,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME
+// });
+
+
+// Function to generate a cryptographically secure random token
+async function generateSecureToken(length = 32) {
+    const crypto = require('crypto');
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(length, (err, buffer) => {
+            if (err) reject(err);
+            resolve(buffer.toString('hex')); // 32 bytes = 64 hex chars
+        });
+    });
+}
+
+// --- Logic for Generating and Registering a Password Reset Token ---
+
+async function createPasswordResetToken(userId) {
+    if (!userId) {
+        throw new Error("User ID is required.");
+    }
+
+    try {
+        const resetToken = await generateSecureToken();
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+        const client = await pool.connect(); // Get a client from the pool
+
+        try {
+            await client.query('BEGIN'); // Start transaction
+
+            // Invalidate any existing tokens for this user
+            // For PostgreSQL:
+            await client.query('DELETE FROM password_resets WHERE user_id = $1', [userId]);
+            // For MySQL:
+            // await client.execute('DELETE FROM password_resets WHERE user_id = ?', [userId]);
+
+            // Register the new token
+            // For PostgreSQL:
+            await client.query(
+                'INSERT INTO password_resets (user_id, token, expires_at) VALUES ($1, $2, $3)',
+                [userId, resetToken, expiresAt.toISOString()] // toISOString() for TIMESTAMP
+            );
+            // For MySQL:
+            // await client.execute(
+            //     'INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)',
+            //     [userId, resetToken, expiresAt]
+            // );
+
+            await client.query('COMMIT'); // Commit transaction
+            console.log(`Password reset token generated for user ID: ${userId}`);
+            console.log(`Token (for demonstration - DO NOT display in real app!): ${resetToken}`);
+            console.log(`Expires At: ${expiresAt}`);
+
+            return resetToken; // Return the token to be emailed to the user
+
+        } catch (dbError) {
+            await client.query('ROLLBACK'); // Rollback transaction on error
+            throw dbError;
+        } finally {
+            client.release(); // Release the client back to the pool
+        }
+    } catch (error) {
+        console.error("Error creating password reset token:", error);
+        throw error;
+    }
+}
+
+// Example usage (e.g., from an API endpoint):
+// Assume a user with ID 123 requests a reset
+(async () => {
+    try {
+        const userId = 123; // Replace with actual user ID from your authentication system
+        const token = await createPasswordResetToken(userId);
+        // In a real application, you'd send this token in an email to the user.
+        // e.g., sendEmail(user.email, `Reset your password at /reset-password?token=${token}`);
+    } catch (e) {
+        console.error("Failed to create token:", e.message);
+    } finally {
+        // Close the pool when the application shuts down
+        // await pool.end();
+    }
+})();
+
+
+
+Scenario 2: API Key Gen 
+
+2:1.Database Schema.
+
+-- `api_keys` table
+CREATE TABLE api_keys (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    api_key VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+2:2. javaScript 
+
+// server.js (or a dedicated API key service)
+
+require('dotenv').config();
+const { Pool } = require('pg'); // Or mysql2/promise for MySQL
+
+const pool = new Pool({ /* ... DB config ... */ });
+
+// Function to generate a cryptographically secure random string for the API key
+async function generateApiKey(length = 32) { // 32 bytes = 64 hex chars
+    const crypto = require('crypto');
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(length, (err, buffer) => {
+            if (err) reject(err);
+            resolve(buffer.toString('hex'));
+        });
+    });
+}
+
+// --- Logic for API Key Generation and Registration ---
+
+async function createNewApiKey(userId, description = 'Unnamed API Key') {
+    if (!userId) {
+        throw new Error("User ID is required.");
+    }
+
+    try {
+        const newApiKey = await generateApiKey();
+        const client = await pool.connect();
+
+        try {
+            // For PostgreSQL:
+            const result = await client.query(
+                'INSERT INTO api_keys (user_id, api_key, description) VALUES ($1, $2, $3) RETURNING id',
+                [userId, newApiKey, description]
+            );
+            // For MySQL:
+            // const [result] = await client.execute(
+            //     'INSERT INTO api_keys (user_id, api_key, description) VALUES (?, ?, ?)',
+            //     [userId, newApiKey, description]
+            // );
+
+            console.log(`API Key created for user ${userId} with ID: ${result.rows[0].id}`); // For PostgreSQL
+            // console.log(`API Key created for user ${userId} with ID: ${result.insertId}`); // For MySQL
+            console.log(`Generated Key (COPY NOW!): ${newApiKey}`); // IMPORTANT: Only show once!
+
+            return { id: result.rows[0].id, apiKey: newApiKey }; // Return generated key and its ID
+
+        } catch (dbError) {
+            // Handle unique constraint error if it's theoretically possible for collision
+            if (dbError.code === '23505' || dbError.code === 'ER_DUP_ENTRY') { // PostgreSQL/MySQL unique violation
+                throw new Error("Could not generate a unique key. Please try again.");
+            }
+            throw dbError; // Re-throw other database errors
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error("Error creating API key:", error);
+        throw error;
+    }
+}
+
+// Example usage (e.g., from an Express.js route handler):
+// app.post('/api/keys', async (req, res) => {
+//     const userId = req.user.id; // Get from authenticated session
+//     const description = req.body.description;
+//     try {
+//         const { apiKey } = await createNewApiKey(userId, description);
+//         res.status(201).json({ message: 'API Key generated successfully. Store it securely!', apiKey });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+// Manual execution for demonstration:
+(async () => {
+    try {
+        const userId = 1; // Example user ID
+        const keyDesc = "My New Dashboard Key";
+        await createNewApiKey(userId, keyDesc);
+    } catch (e) {
+        console.error("Failed to create API Key:", e.message);
+    } finally {
+        // await pool.end();
+    }
+})();
+
+
+
+Example 3. Assymetric Key Gen with jS.
+
+// crypto-utils.js
+
+const crypto = require('crypto');
+
+// Function to generate a symmetric encryption key for AES-256
+// AES-256 requires a 256-bit (32-byte) key.
+function generateAesKey(keyLengthBytes = 32) {
+    if (keyLengthBytes !== 16 && keyLengthBytes !== 24 && keyLengthBytes !== 32) {
+        throw new Error("AES key length must be 16, 24, or 32 bytes.");
+    }
+    return crypto.randomBytes(keyLengthBytes); // Returns a Buffer
+}
+
+// Encryption function
+function encrypt(text, keyBuffer) {
+    const algorithm = 'aes-256-cbc';
+    const iv = crypto.randomBytes(16); // IV for AES-256-CBC is 16 bytes
+    const cipher = crypto.createCipheriv(algorithm, keyBuffer, iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return { iv: iv.toString('hex'), encryptedData: encrypted };
+}
+
+// Decryption function
+function decrypt(encryptedData, ivHex, keyBuffer) {
+    const algorithm = 'aes-256-cbc';
+    const iv = Buffer.from(ivHex, 'hex');
+    const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+}
+
+// --- Main Logic for Generating and Using a Symmetric Key ---
+
+try {
+    const aesKey = generateAesKey(); // Generates a 32-byte Buffer
+
+    console.log("<h2>AES-256 Symmetric Encryption Key Generated!</h2>");
+    console.log("This key should be stored securely (e.g., in an environment variable, dedicated key vault) and NEVER exposed.");
+    console.log(`Generated Key (hex): ${aesKey.toString('hex')}`); // Display in hex for logging
+    console.log(`Length: ${aesKey.length} bytes`);
+
+    // --- Example Usage: Encrypting and Decrypting Data ---
+    const sensitiveData = "User's credit card number: 1234-5678-9012-3456";
+
+    const { iv, encryptedData } = encrypt(sensitiveData, aesKey);
+
+    console.log("<h3>Encryption Example:</h3>");
+    console.log(`Original Data: ${sensitiveData}`);
+    console.log(`IV (hex): ${iv}`);
+    console.log(`Encrypted Data (hex): ${encryptedData}`);
+
+    const decryptedData = decrypt(encryptedData, iv, aesKey);
+
+    console.log("<h3>Decryption Example:</h3>");
+    console.log(`Decrypted Data: ${decryptedData}`);
+
+} catch (error) {
+    console.error("Error:", error.message);
+}
+
+
+
+Example 4. RSA Gen.
+
+// crypto-rsa.js
+
+const crypto = require('crypto');
+
+// Function to generate an RSA key pair
+function generateRsaKeyPair(bits = 2048) {
+    const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+        modulusLength: bits, // typically 2048 or 4096
+        publicKeyEncoding: {
+            type: 'spki', // SubjectPublicKeyInfo
+            format: 'pem', // PEM encoding
+        },
+        privateKeyEncoding: {
+            type: 'pkcs8', // PKCS #8 format
+            format: 'pem', // PEM encoding
+            // passphrase: 'your_strong_passphrase', // Optional: encrypt private key with a passphrase
+        },
+    });
+
+    return { publicKey, privateKey };
+}
+
+// --- Main Logic for Generating and Using an RSA Key Pair ---
+
+try {
+    const { publicKey, privateKey } = generateRsaKeyPair(2048);
+
+    console.log("<h2>RSA Key Pair Generated!</h2>");
+    console.log("<p><strong>Private Key (keep secret!):</strong></p>");
+    console.log(privateKey);
+    console.log("<p><strong>Public Key (can be shared):</strong></p>");
+    console.log(publicKey);
+
+    // --- Example Usage 1: Digital Signing ---
+    const dataToSign = "This message is authentic and hasn't been tampered with.";
+    const signer = crypto.createSign('SHA256'); // Use SHA256 for signing
+    signer.update(dataToSign);
+    const signature = signer.sign(privateKey, 'base64');
+
+    console.log("<h3>Digital Signature Example:</h3>");
+    console.log(`Original Data: ${dataToSign}`);
+    console.log(`Signature (base64): ${signature}`);
+
+    // Verify the signature with the public key
+    const verifier = crypto.createVerify('SHA256');
+    verifier.update(dataToSign);
+    const verificationResult = verifier.verify(publicKey, signature, 'base64');
+
+    if (verificationResult) {
+        console.log("Signature Verified: Data is authentic!");
+    } else {
+        console.log("Signature Verification Failed: Data tampered or wrong key!");
+    }
+
+    // --- Example Usage 2: Asymmetric Encryption/Decryption ---
+    const messageToEncrypt = "Only the private key holder should read this secret message.";
+    const encryptedBuffer = crypto.publicEncrypt(
+        { key: publicKey, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING },
+        Buffer.from(messageToEncrypt)
+    );
+    const encryptedMessage = encryptedBuffer.toString('base64');
+
+    console.log("<h3>Asymmetric Encryption Example:</h3>");
+    console.log(`Original Message: ${messageToEncrypt}`);
+    console.log(`Encrypted Message (base64): ${encryptedMessage}`);
+
+    const decryptedBuffer = crypto.privateDecrypt(
+        { key: privateKey, padding: crypto.constants.RSA_PKCS1_OAEP_PADDING },
+        Buffer.from(encryptedMessage, 'base64')
+    );
+    const decryptedMessage = decryptedBuffer.toString('utf8');
+
+    console.log(`Decrypted Message: ${decryptedMessage}`);
+
+} catch (error) {
+    console.error("Error:", error.message);
+}
