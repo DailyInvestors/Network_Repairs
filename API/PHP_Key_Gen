@@ -1,0 +1,55 @@
+Description: PHP Basic example for API key code generation.
+
+
+
+
+
+<?php
+
+// Simulate database connection
+class Database { /* ... (same as previous examples) ... */ }
+
+// Helper function to generate a cryptographically secure random string for the API key
+function generateApiKey(int $length = 64): string {
+    return bin2hex(random_bytes($length / 2)); // Each byte becomes 2 hex characters
+}
+
+// --- Main Logic for API Key Generation and Registration ---
+
+// Assume user ID 1 is logged in.
+$current_user_id = 1;
+$key_description = $_POST['key_description'] ?? 'Unnamed API Key';
+
+if (!$current_user_id) {
+    die("Error: User not logged in.");
+}
+
+try {
+    $db = new Database();
+    $pdo = $db->getConnection();
+
+    // 1. Generate the new API key
+    $new_api_key = generateApiKey();
+
+    // 2. Register (store) the new API key in the database
+    $stmt = $pdo->prepare("INSERT INTO api_keys (user_id, api_key, description) VALUES (?, ?, ?)");
+    $stmt->execute([$current_user_id, $new_api_key, $key_description]);
+
+    echo "<h2>New API Key Generated!</h2>";
+    echo "<p><strong>YOUR NEW API KEY (COPY NOW!):</strong> <code>" . htmlspecialchars($new_api_key) . "</code></p>";
+    echo "<p>This key will not be shown again. Store it securely.</p>";
+
+} catch (PDOException $e) {
+    if ($e->getCode() == '23000') { // Check for unique constraint violation (unlikely with sufficient length)
+        echo "Could not generate a unique key. Please try again.";
+    } else {
+        echo "Error: " . $e->getMessage();
+    }
+}
+?>
+
+<form method="POST">
+    <label for="key_description">Key Description:</label>
+    <input type="text" id="key_description" name="key_description" placeholder="e.g., My Mobile App Key">
+    <button type="submit">Generate New API Key</button>
+</form>
