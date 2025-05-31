@@ -1,0 +1,57 @@
+Description: PHP code for Symmetrical Encrypted Key Generation.
+
+
+Requirements: PHP
+
+
+
+<?php
+
+// Function to generate a symmetric encryption key for AES-256
+// AES-256 requires a 256-bit (32-byte) key.
+function generateAesKey(int $key_length_bytes = 32): string {
+    if ($key_length_bytes !== 16 && $key_length_bytes !== 24 && $key_length_bytes !== 32) {
+        throw new InvalidArgumentException("AES key length must be 16, 24, or 32 bytes.");
+    }
+    return random_bytes($key_length_bytes);
+}
+
+// --- Main Logic for Generating a Symmetric Key ---
+
+try {
+    $aes_key = generateAesKey(32); // Generate a 32-byte (256-bit) key
+
+    echo "<h2>AES-256 Symmetric Encryption Key Generated!</h2>";
+    echo "<p>This key should be stored securely (e.g., in an environment variable, dedicated key vault, or configuration file) and NEVER exposed.</p>";
+    // For demonstration, displaying it in hex. In a real app, you wouldn't display this.
+    echo "<p><strong>Generated Key (hex):</strong> <code>" . bin2hex($aes_key) . "</code></p>";
+    echo "<p>Length: " . strlen($aes_key) . " bytes</p>";
+
+    // --- Example Usage: Encrypting and Decrypting Data ---
+
+    $data_to_encrypt = "This is some super secret data!";
+    $cipher = 'aes-256-cbc'; // Common cipher mode
+
+    // Generate a random IV (Initialization Vector) for CBC mode
+    // IV must be random for each encryption but does NOT need to be secret.
+    // It should be stored/transmitted along with the ciphertext.
+    $iv_length = openssl_cipher_iv_length($cipher);
+    $iv = random_bytes($iv_length);
+
+    // Encrypt
+    $encrypted_data = openssl_encrypt($data_to_encrypt, $cipher, $aes_key, 0, $iv);
+
+    echo "<h3>Encryption Example:</h3>";
+    echo "<p>Original Data: " . htmlspecialchars($data_to_encrypt) . "</p>";
+    echo "<p>IV (hex): " . bin2hex($iv) . "</p>";
+    echo "<p>Encrypted Data (base64): " . base64_encode($encrypted_data) . "</p>";
+
+    // Decrypt
+    $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $aes_key, 0, $iv);
+
+    echo "<h3>Decryption Example:</h3>";
+    echo "<p>Decrypted Data: " . htmlspecialchars($decrypted_data) . "</p>";
+
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+}
