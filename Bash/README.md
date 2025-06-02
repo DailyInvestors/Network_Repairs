@@ -25,3 +25,5 @@ How to Use and Customize:
 
 
 This is a basic skeleton designed toward Network Repairs. This is for educational purposes only, if needed for usage, you kust modify these settings for your environment and preferences of tools.
+
+Note: For Defense, in a crucial environment where you are being attacked, the shell is in your system somewhere, or with symbolic links. BASH has saved my system thousands of Times. Once even landed in my attackers shell 💯
