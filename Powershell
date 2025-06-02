@@ -1,0 +1,84 @@
+I. System Information & Status:
+ * Get-Process: List running processes.
+ * Get-Service: List running services.
+ * Get-EventLog -LogName System -Newest 100: Check system event logs.
+ * Get-EventLog -LogName Application -Newest 100: Check application event logs.
+ * Get-EventLog -LogName Security -Newest 100: Check security event logs.
+ * Get-WmiObject Win32_OperatingSystem: Get OS information.
+ * Get-WmiObject Win32_ComputerSystem: Get computer system information.
+ * Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object {$_.IPEnabled -eq $true}: Get network adapter configuration.
+ * Get-NetTCPConnection: List active TCP connections.
+ * Get-NetUDPEndpoint: List active UDP endpoints.
+ * Get-NetFirewallRule -Direction Inbound | Where-Object {$_.Enabled -eq $true}: Check inbound firewall rules.
+ * Get-NetFirewallRule -Direction Outbound | Where-Object {$_.Enabled -eq $true}: Check outbound firewall rules.
+ * Get-ScheduledTask | Where-Object {$_.State -eq "Running"}: Check running scheduled tasks.
+ * Get-ChildItem -Path Cert:\LocalMachine\My: List local machine certificates.
+ * Get-ChildItem -Path Cert:\CurrentUser\My: List current user certificates.
+ * Get-WindowsCapability -Online | Where-Object {$_.State -eq "Installed"}: List installed Windows capabilities.
+ * Get-WindowsOptionalFeature -Online: List enabled optional features.
+ * Get-HotFix: List installed hotfixes.
+ * Get-ComputerInfo: Get detailed computer information.
+ * Get-WinEvent -LogName Security -MaxEvents 100: alternative security log command.
+II. Network & Connectivity:
+ * Test-NetConnection -ComputerName google.com -Port 443: Test network connectivity.
+ * ipconfig /all: Display network configuration (CMD command, usable in PowerShell).
+ * nslookup google.com: Perform DNS lookup (CMD command).
+ * tracert google.com: Trace route to a destination (CMD command).
+ * netstat -ano: Display network statistics (CMD command).
+ * Disable-NetAdapter -Name "Ethernet": Disable a network adapter.
+ * Enable-NetAdapter -Name "Ethernet": Enable a network adapter.
+ * Remove-NetRoute -InterfaceAlias "Ethernet" -DestinationPrefix "0.0.0.0/0": Remove default gateway.
+ * Add-NetRoute -InterfaceAlias "Ethernet" -DestinationPrefix "0.0.0.0/0" -NextHop "192.168.1.1": Add default gateway.
+ * Restart-NetAdapter -Name "Ethernet": Restart a network adapter.
+ * Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ("8.8.8.8","8.8.4.4"): Set DNS servers.
+ * Clear-DnsClientCache: Clear DNS cache.
+ * Get-NetIPAddress: Get IP addresses.
+ * Get-NetNeighbor: Get ARP table.
+ * Get-NetRoute: Get routing table.
+III. User Accounts & Security:
+ * Get-LocalUser: List local users.
+ * Get-LocalGroupMember -Group "Administrators": List administrators.
+ * Disable-LocalUser -Name "SuspiciousUser": Disable a local user.
+ * Enable-LocalUser -Name "SuspiciousUser": Enable a local user.
+ * Set-LocalUser -Name "SuspiciousUser" -Password (ConvertTo-SecureString "NewPassword" -AsPlainText -Force): Reset user password.
+ * Remove-LocalUser -Name "SuspiciousUser": Remove a local user.
+ * Set-ExecutionPolicy Restricted: Restrict PowerShell execution policy.
+ * Set-ExecutionPolicy RemoteSigned: Set PowerShell execution policy to remote signed.
+ * Get-WinEvent -LogName Security | Where-Object {$_.ID -eq 4625}: Check failed login attempts.
+ * Get-WinEvent -LogName Security | Where-Object {$_.ID -eq 4624}: Check successful login attempts.
+ * Get-WinEvent -LogName Security | Where-Object {$_.ID -eq 4720}: Check for user creation.
+ * Get-WinEvent -LogName Security | Where-Object {$_.ID -eq 4726}: Check for user deletion.
+ * Get-Acl -Path C:\SuspiciousFolder: Get file/folder ACLs.
+ * Set-Acl -Path C:\SuspiciousFolder -AccessRights "ReadAndExecute" -Account "Everyone" -InheritanceFlags ContainerInherit, ObjectInherit -PropagationFlags None -AccessControlType Allow: Set file/folder ACLs.
+ * Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run": Check startup programs.
+IV. Services & Processes:
+ * Stop-Service -Name "SuspiciousService": Stop a service.
+ * Start-Service -Name "SuspiciousService": Start a service.
+ * Disable-Service -Name "SuspiciousService": Disable a service.
+ * Enable-Service -Name "SuspiciousService": Enable a service.
+ * Get-Process -Name "SuspiciousProcess" | Stop-Process -Force: Stop a process.
+ * Get-Process -Id 1234 | Stop-Process -Force: Stop a process by ID.
+ * Get-Process | Where-Object {$_.CPU -gt 50}: Find processes with high CPU usage.
+ * Get-Process | Where-Object {$_.WorkingSet64 -gt 1GB}: Find processes with high memory usage.
+ * Get-WmiObject Win32_StartupCommand: List startup commands.
+ * Get-ScheduledTask | Disable-ScheduledTask: Disable scheduled tasks.
+V. Files & Folders:
+ * Get-ChildItem -Path C:\SuspiciousFolder -Recurse: List files in a folder recursively.
+ * Remove-Item -Path C:\SuspiciousFile.exe -Force: Remove a file.
+ * Remove-Item -Path C:\SuspiciousFolder -Recurse -Force: Remove a folder and its contents.
+ * Rename-Item -Path C:\SuspiciousFile.exe -NewName "SuspiciousFile.old": Rename a file.
+ * Get-FileHash -Path C:\SuspiciousFile.exe: Get file hash.
+ * Get-ChildItem -Path C:\ -Recurse | Where-Object {$_.LastWriteTime -gt (Get-Date).AddDays(-1)}: Find recently modified files.
+ * Get-ChildItem -Path C:\ -Recurse | Where-Object {$_.CreationTime -gt (Get-Date).AddDays(-1)}: Find recently created files.
+ * Get-ChildItem -Path C:\ -Recurse | Where-Object {$_.Length -gt 1GB}: Find large files.
+ * Compress-Archive -Path C:\SuspiciousFolder -DestinationPath C:\SuspiciousFolder.zip: Compress a folder.
+ * Expand-Archive -Path C:\SuspiciousFolder.zip -DestinationPath C:\ExtractedFolder: Extract a zip file.
+VI. Windows Defender & Security:
+ * Update-MpSignature: Update Windows Defender signatures.
+ * Start-MpScan -ScanType FullScan: Start a full Windows Defender scan.
+ * Start-MpScan -ScanType QuickScan: Start a quick Windows Defender scan.
+ * Get-MpThreatDetection: Get Windows Defender threat detections.
+ * Add-MpPreference -ExclusionPath "C:\SuspiciousFolder": Add Windows Defender exclusion.
+ * Remove-MpPreference -ExclusionPath "C:\SuspiciousFolder": Remove Windows Defender exclusion.
+ * Set-MpPreference -DisableRealtimeMonitoring $true: Disable real-time monitoring
+
