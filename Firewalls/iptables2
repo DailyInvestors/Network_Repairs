@@ -1,0 +1,101 @@
+Block Single Ip: sudo iptables -A INPUT -s 192.168.1.100 -j DROP
+Block Networks: sudo iptables -A INPUT -s 10.0.0.0/24 -j DROP
+Block Ports: sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+Block Syn Flood: sudo iptables -A INPUT -p tcp --syn --tcp-flags SYN,RST SYN -m limit --limit 10/minute --limit-burst 5 -j ACCEPT
+ICMP Flood: iptables -A INPUT -p icmp -j DROP
+iptables -A INPUT -p icmp -j DROP
+Port Scanning: iptables -A INPUT -p tcp -m state --state NEW -m limit --limit 1/s --limit-burst 5 -j DROP
+UDP: iptables -A INPUT -p udp -m state --state NEW -m limit --limit 1/s --limit-burst 5 -j DROP
+Ssh Brute: iptables -A INPUT -p tcp --dport 22 -m limit --limit 10/m --limit-burst 10 -j DROP
+FTP: iptables -A INPUT -p tcp --dport 21 -m limit --limit 10/m --limit-burst 10 -j DROP
+Erase: sudo iptables -D INPUT 1
+
+iptables & UFW Cheat Sheet: 
+
+I. iptables (Raw Power)
+
+A. Basic Concepts:
+ * Chains:  INPUT (incoming traffic), OUTPUT (outgoing traffic), FORWARD (traffic passing through the router).
+ * Tables: filter (default, for most rules), nat (Network Address Translation), mangle (packet alteration).
+ * Rules: Define what to do with matching packets (ACCEPT, DROP, REJECT).
+ * Targets: Actions to take on a matching packet.
+
+B. Common Commands:
+ * List Rules:
+   * iptables -L (all chains)
+   * iptables -L -v (verbose, shows packet counts)
+   * iptables -L -n (numeric output, shows IP addresses)
+   * iptables -L INPUT (specific chain)
+ * Append a Rule (at the end of the chain):
+   * iptables -A INPUT -p tcp --dport 80 -j ACCEPT (Allow HTTP traffic)
+   * iptables -A INPUT -p udp --dport 53 -j ACCEPT (Allow DNS traffic)
+   * iptables -A FORWARD -i eth0 -o eth1 -j ACCEPT (Allow forwarding between interfaces)
+ * Insert a Rule (at a specific position):
+   * iptables -I INPUT 2 -p tcp --dport 22 -j ACCEPT (Insert rule at position 2, allowing SSH)
+ * Delete a Rule:
+   * iptables -D INPUT -p tcp --dport 80 -j ACCEPT (Delete the specific rule)
+   * iptables -D INPUT 3 (Delete rule at line number 3 - use iptables -L -n --line-numbers to see line numbers)
+ * Flush Rules (remove all rules in a chain/table):
+   * iptables -F (all chains)
+   * iptables -F INPUT (specific chain)
+   * iptables -t nat -F (flush NAT table)
+
+ * Save Rules (important!):
+   * /sbin/iptables-save > /etc/iptables/rules.v4 (IPv4)
+   * /sbin/ip6tables-save > /etc/iptables/rules.v6 (IPv6)  (If you're using IPv6)
+
+ * Load Rules (on system startup):
+   * Add the above save commands to your system's startup scripts (e.g., /etc/network/interfaces or systemd services).  Distribution-specific.
+C. Example Rules:
+ * Allow SSH: iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+ * Deny all incoming traffic (except SSH):
+   * iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+   * iptables -A INPUT -j DROP
+ * Allow outgoing traffic: iptables -A OUTPUT -j ACCEPT (usually default)
+ * Block a specific IP: iptables -A INPUT -s 192.168.1.100 -j DROP
+ * Allow ping (ICMP): iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+II. UFW (User-Friendly Firewall)
+
+A. Basic Concepts:
+ * ufw simplifies iptables by providing a higher-level interface.
+ * Uses the same underlying iptables framework.
+B. Common Commands:
+ * Enable UFW: ufw enable
+ * Disable UFW: ufw disable
+ * Check Status: ufw status (shows active rules)
+ * Allow Connection:
+   * ufw allow 22/tcp (allow SSH)
+   * ufw allow http (allow HTTP, common service names are often predefined)
+   * ufw allow from 192.168.1.100 to any port 80 (allow from specific IP)
+ * Deny Connection:
+   * ufw deny 25/tcp (deny SMTP)
+
+ * Delete a Rule:
+   * ufw delete allow 22/tcp
+   * ufw delete 3 (delete rule by number - use ufw status numbered to see numbers)
+ * Reset UFW (remove all rules and disable): ufw reset
+C. Example Usage:
+ * Enable UFW: ufw enable
+ * Allow SSH: ufw allow ssh
+ * Allow HTTP: ufw allow http
+ * Deny all other incoming: ufw default deny incoming
+ * Allow all outgoing: ufw default allow outgoing
+ * Check Status: ufw status
+
+III. Key Differences: iptables vs. UFW
+
+| Feature | iptables | UFW |
+|---|---|---|
+| Complexity | High | Low |
+| Flexibility | Very High | Limited |
+| Learning Curve | Steep | Gentle |
+| Direct Access to Tables/Chains | Yes | No (abstracted) |
+| Best For | Advanced configurations, complex network setups | Simple, user-friendly firewall management |
+
+IV. Important Notes;
+ * Order matters in iptables: Rules are processed sequentially.
+ * Save your iptables rules! Otherwise, they will be lost on reboot.
+ * Test your firewall rules carefully.  A misconfigured firewall can lock you out of your server.
+ * UFW is a front-end for iptables: Changes made with ufw are ultimately implemented using iptables rules.
+ * Logging: Consider adding logging to your iptables rules to track firewall activity (e.g., -j LOG --log-prefix "Dropped: ").  ufw also logs by default.  Check your system logs (e.g., /var/log/syslog or /var/log/messages).
+
