@@ -1,0 +1,113 @@
+1. Basic Commands
+ * echo: Displays text on the console.
+   echo "Hello, world!" 
+
+ * ls: Lists files and directories in the current directory.
+   ls -l # Lists files with detailed information
+ls -a # Lists all files, including hidden files (starting with .)
+
+ * cd: Changes the current directory.
+   cd /home # Changes to the home directory
+cd .. # Moves to the parent directory
+
+ * pwd: Displays the current working directory.
+ * mkdir: Creates a new directory.
+   mkdir new_directory
+
+ * touch: Creates an empty file.
+   touch my_file.txt
+
+ * cat: Displays the contents of a file.
+   cat my_file.txt
+
+ * cp: Copies files or directories.
+   cp file1.txt file2.txt # Copies file1.txt to file2.txt
+
+ * mv: Moves or renames files or directories.
+   mv old_file.txt new_file.txt # Renames old_file.txt to new_file.txt
+
+ * rm: Removes files or directories.
+   rm file.txt # Removes the file named file.txt
+rm -r directory # Removes the directory named directory recursively
+
+2. Variables and Data Types
+ * Variables: Store values.
+   name="John Doe"
+echo $name
+
+ * Data Types:
+   * Strings: name="John Doe"
+   * Integers: age=30
+   * Floats: pi=3.14159
+3. Control Flow
+ * if statement: Executes a block of code if a condition is true.
+   if [ $age -gt 18 ]; then
+    echo "You are an adult."
+fi
+
+ * if-else statement: Executes one block of code if a condition is true, and another if it's false.
+   if [ $age -gt 18 ]; then
+    echo "You are an adult."
+else
+    echo "You are a minor."
+fi
+
+ * elif statement: Adds additional conditions to an if statement.
+ * for loop: Repeats a block of code for a specific number of times or over a list of items.
+   for i in {1..5}; do
+    echo "Iteration: $i"
+done
+
+ * while loop: Repeats a block of code as long as a condition is true.
+   count=0
+while [ $count -lt 5 ]; do
+    echo "Count: $count"
+    count=$((count + 1))
+done
+
+ * case statement: Executes different blocks of code based on the value of a variable.
+4. Input and Output
+ * read: Reads input from the user.
+   read -p "Enter your name: " name
+echo "Hello, $name!"
+
+ * echo: Writes output to the console.
+ * >, >>: Redirects output to a file.
+   ls > file_list.txt # Overwrites the file
+ls >> file_list.txt # Appends to the file
+
+ * <: Redirects input from a file.
+   cat < my_file.txt 
+
+ * |: Pipes the output of one command to the input of another.
+   ls -l | grep "my_file" # Searches for "my_file" in the output of ls -l
+
+5. Functions
+ * Define reusable blocks of code.
+   function greet() {
+    echo "Hello, $1!"
+}
+greet "John"
+
+6. Advanced Techniques
+ * Regular expressions: Pattern matching for text manipulation.
+ * Command-line arguments: Passing arguments to scripts.
+ * Background processes: Running commands in the background.
+ * Networking: Using curl, wget, ssh, and other tools for interacting with networks.
+ * Scripting with other languages: Python, Perl, Ruby, etc.
+7. Example Scripts
+ * Simple script to greet the user:
+   #!/bin/bash
+echo "Enter your name:"
+read name
+echo "Hello, $name!"
+
+ * Script to check if a file exists:
+   #!/bin/bash
+if [ -f "$1" ]; then
+    echo "$1 exists."
+else
+    echo "$1 does not exist."
+fi
+
+
