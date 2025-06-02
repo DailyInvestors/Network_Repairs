@@ -1,0 +1,23 @@
+Netcat: Single Port: nc -zv <hostname> <port>
+Grab Banner: nc -v <hostname> <port>
+Data snatch: nc -l <port> > output.txt
+Port & Banner: #!/bin/bash
+
+# Function to scan a port and grab the banner
+scan_port() {
+  nc -v -w 2 $1 $2 2>&1| grep -oP '.*\s\((.*)\)'
+}
+
+# List of hosts and ports to scan
+hosts=("192.168.1.1" "192.168.1.2")
+ports=(22 80 443)
+
+# Iterate through hosts and ports
+for host in "${hosts[@]}"; do
+  for port in "${ports[@]}"; do
+    banner=$(scan_port $host $port)
+    echo "$host:$port: $banner"
+  done
+done
+
+Note: These are for Educational Purposes only. Going through my mobile device cleaning out space, and one day one of us may need these.
