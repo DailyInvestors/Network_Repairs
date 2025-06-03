@@ -1,0 +1,10 @@
+Description: Linux Self Auditing Tool.
+
+Installation: sudo apt install auditd
+
+Steps:
+1. sudo apt install auditd
+2.sudo systemctl start auditd
+3.sudo systemctl enable auditd
+4. sudo systemctl status auditd
+
