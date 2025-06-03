@@ -1,0 +1,25 @@
+Description: Basic Terminal Commands on windows for system repairsz file repairsz etc. Old document, will eventually add more once I turn this into a Page.
+
+
+
+1. sfc /scannow
+sfc /verifyonly
+stc /scanfile=file
+You may need to use sudo access.
+
+2. Dism /Online /Cleanup-image /ScanHealth
+
+3. chkdsk C: /f /r /x
+
+4. fsutil dirty query X:
+
+5. diskpart: list disk, select disk X, clean, create, partition, format fs=ntfs quick, defrag, etc 
+
+6. DISM /Online /Cleanup-image /StartComponetCleanup
+
+
+7. Boot Repair
+bootrec /fixmbr 
+bootrec /scanos
+bootrec /rebuildbcd
+.etc
