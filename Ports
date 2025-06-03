@@ -1,0 +1,23 @@
+FTP=21
+Shh=22
+Telnet=23
+SMTP=25
+DNS=53
+VPN=443
+HTTP=80
+HTTPS=443
+POP=110
+Imap=143
+BIOS=137,138,139
+
+CryptoPorts
+Bitcoin=8333,18333
+Dogecoin=22556
+Ethereum= 30303
+Litecoin= 9333
+Monero= 18080, 18081
+Ripple/XRP= 2459, 51235"Legacy"
+Stellar=11625
+
+
+You can check your pirt activities in a million different ways, ranging ss -a for sockets, netstat, arp, the list can go on. With Cryoto Mining and Cyber Attacks growing with Technology, it is essential to know what is running on your system and where.
