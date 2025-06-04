@@ -8,4 +8,10 @@ You can run a nmap passive scan, whois, dig -x for Reverse Lookup.
 
 3. Or you can use tools such as curl, and wget and manually verify these identities of the unknown robots. With this we can verify through .json files, and through a list if IO ranges that stay underneath Google. These are also included in sites such as whois.com and ipinfo.io that offer a glimpse into what these robots are. Google states that for us to view their activity, you must view their logs. This may depend on your system and or build. Please consult a Professional or Help Guide.
 
+As my devices, are all getting invaded by these unknown Robots. Here is a list of IPs to Verify with DNS Records of these several second inspections.
+
+Per the Google Help Guide: Their site to see a list of common GoogleBots:
+
+developers.google.com/static/search/apis/ipranges/googlebot.json
+
 https://soloist.ai/dailyinvestors 
