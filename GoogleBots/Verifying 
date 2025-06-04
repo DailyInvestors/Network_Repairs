@@ -1,0 +1,11 @@
+Description: Their are several methods and a variety of tools that we can use to verify if these GoogleBots are indeed a Real GoogleBot.
+
+
+1. One way is using Intrusion Detection Systems, such as Wireshark, Bro, Suricata, etc. These Free Tools, allow us to examine the traffic coming in, giving us a glipse of what is Really Going On. Once you review your network activity, this should give you information realted to your network.
+
+2. Once you have captured a IP through one of the tool's above. We can run a variety of manual commands, or to verify with Public DNS records.
+You can run a nmap passive scan, whois, dig -x for Reverse Lookup.
+
+3. Or you can use tools such as curl, and wget and manually verify these identities of the unknown robots. With this we can verify through .json files, and through a list if IO ranges that stay underneath Google. These are also included in sites such as whois.com and ipinfo.io that offer a glimpse into what these robots are. Google states that for us to view their activity, you must view their logs. This may depend on your system and or build. Please consult a Professional or Help Guide.
+
+https://soloist.ai/dailyinvestors 
