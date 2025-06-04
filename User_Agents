@@ -1,0 +1,123 @@
+These are a list of Common User_Agents. At times for security and testong measures we may either jave to evade and moch our True Identity. In defense if we have moch agents running, this may be the security that sends the attacker to the mochs.
+
+   * Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+   
+ 
+   * User-agent: Googlebot-Image/1.0
+
+ * Googlebot-Video/1.0
+
+ * Googlebot-News: Crawls news content for Google News.
+ 
+  * User-agent: Googlebot-News/1.0
+
+ * Mozilla/5.0 (X11; Linux x86_64; Storebot-Google/1.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/... Safari/...)
+ 
+  
+ * Google-InspectionTool/1.0
+
+   * User-agent: GoogleOther
+   
+* User-agent: GoogleOther-Image
+ 
+  * User-agent: GoogleOther-Video
+  
+ * AdsBot-Google: Crawls landing pages for Google Ads quality checks.
+  
+ *  AdsBot-Google (+http://www.google.com/adsbot.html)
+
+  AdsBot-Google-Mobile (often with Android or Mobile in the string)
+ 
+   
+*  Feedfetcher-Google (+http://www.google.com/feedfetcher.html)
+ 
+
+Important Note on robots.txt:
+When specifying rules in your robots.txt file, you would use the shorter, more general tokens to block or allow specific Google crawlers. For example:
+User-agent: Googlebot
+Disallow: /private/
+
+* Googlebot-Image
+Disallow: /images/no-index-this.jpg
+
+User-agent: *
+Allow: /
+
+
+Microsoft 
+     * Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)
+     
+* Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/W.X.Y.Z Safari/537.36 (modern, Chromium-based)
+     
+* Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z Mobile Safari/537.36 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) (mobile variant)
+
+ 
+  * Mozilla/5.0 (compatible; adidxbot/2.0; +http://www.bing.com/bingbot.htm)
+  
+ * Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53 (compatible; adidxbot/2.0; +http://www.bing.com/bingbot.htm) (mobile example)
+
+
+  
+ * Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534+ (KHTML, like Gecko) BingPreview/1.0b
+  
+ * Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53 BingPreview/1.0b
+ 
+* MSNBot / msnbot: An older generation of Microsoft's crawler, largely superseded by Bingbot, but you might still see older variations or specialized uses.
+
+   * msnbot/1.0 (+http://search.msn.com/msnbot.htm)
+  
+ * msnbot-media (for media content)
+
+
+ 
+* General Format (Desktop):
+  
+ Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/X.X.X.X Safari/537.36 Edg/Y.Y.Y.Y
+  
+ * Windows NT 10.0: Indicates Windows 10 or 11.
+ 
+  * Win64; x64: Specifies 64-bit operating system and architecture.
+  
+ * AppleWebKit/537.36 (KHTML, like Gecko) Chrome/X.X.X.X Safari/537.36: These parts indicate its Chromium/Blink engine base, a common practice for modern browsers.
+ 
+  * Edg/Y.Y.Y.Y: This is the crucial identifier for Microsoft Edge, followed by its specific version.
+
+ * Mobile (Android):
+   Mozilla/5.0 (Linux; Android 10; HD1913) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/X.X.X.X Mobile Safari/537.36 EdgA/Y.Y.Y.Y
+  
+ * EdgA: Indicates Edge on Android.
+ 
+* Mobile (iOS):
+  
+* Mozilla/5.0 (iPhone; CPU iPhone OS 17_7_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 EdgiOS/Y.Y.Y.Y Mobile/15E148 Safari/605.1.15
+  
+ * EdgiOS: Indicates Edge on iOS.
+Note on User-Agent Client Hints: Modern browsers (including Edge) are moving towards User-Agent Client Hints (UA-CH) as a more privacy-preserving way to convey browser and device information, rather than a single, long user-agent string. This means information is split into multiple HTTP headers.
+
+* Other Microsoft User-Agents
+ 
+* Microsoft Office / SharePoint related: When accessing web content from within Office applications (e.g., Word, Excel, Outlook) or SharePoint, you might see user-agents indicating the specific application. These can vary greatly.
+ 
+* Microsoft Defender / Security Products: Automated tools for scanning and analysis may have specific user-agents.
+
+ * Microsoft Bot Framework: Bots built using Microsoft's Bot Framework might have user-agents that identify them as such, often including BotBuilder.
+  
+ * Example: User-Agent: BotBuilder/4.0.0.0 (netcore2; abs/2.65 Windows NT 10.0; Win64; x64) Middleware(...)
+ 
+* OneDrive / SharePoint Sync Clients: When syncing files, these clients might use their own user-agents for web requests.
+
+ * Azure / Cloud Services: Various internal Microsoft services running on Azure or other cloud platforms will have their own user-agents for inter-service communication or external fetches.
+
+ * Microsoft Security Scanner / Antivirus: Scanners looking for malware or vulnerabilities might identify themselves.
+Important Considerations for robots.txt:
+When dealing with robots.txt, you'll primarily use the shorter, general tokens for Microsoft's main crawlers:
+User-agent: Bingbot
+Disallow: /no-bing/
+
+User-agent: AdIdxBot
+Disallow: /no-ads/
+
+User-agent: *
+Allow: /
+
+This list covers the most common and important Microsoft user-agents you're likely to encounter. As with any large tech company, the specific strings and their usage can evolve over time.
