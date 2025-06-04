@@ -14,4 +14,11 @@ Per the Google Help Guide: Their site to see a list of common GoogleBots:
 
 developers.google.com/static/search/apis/ipranges/googlebot.json
 
+This next url is for their special-crawlers. You can compare these with the DNS records to confirm that these are in fact GoogleBots in your systems and networks.
+
+developers.google.com/static/search/apis/ipranges/special-crawlers.json
+
+
+Note: We appreciate any and all Donations. This will help support our Research and Patches to help secure the communities.
+
 https://soloist.ai/dailyinvestors 
