@@ -1,0 +1,10 @@
+Description: Rkhunter is a Rootkit tools that you can run on any Linux. This can be ran as a crontab job silently in the background, or forced to check-all in your system. This program does cause false Positives. However this is a feont like tool, to repairing any system taken over.
+
+Example Command: sudo rkhunter -q --cronjob
+This runs the rootkit check in yhe background as a cronjob silently to help capture the attackers kr malicious shell activities, you can add logging into this as well. 
+
+Today, after once again confirming a new set of attacks lol, they striped my Python from me while going through SMTP or DNS and exporting idk what through Apache2.
+You can see your full system processing with
+grep | ps aux
+
+To view your sockets ss -a
