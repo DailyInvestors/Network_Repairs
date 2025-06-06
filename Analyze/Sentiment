@@ -1,0 +1,58 @@
+Decription: When it comes to Network repairs, Auditing, and analyzing our Data. We fan create Basic codes to help smooth the process on our testing. This is a basic example. We can recreate these to examine and analyze a variety of things such as blobs, text, images, src codes, the list goes on.
+
+
+Steps. This is a Python example. 
+Must have Python in your system.
+Must have the textblob Python Library.
+Create into a Python file
+Grant permissions 
+Sudo the python file
+
+# sentiment.py
+
+from textblob import TextBlob
+
+def analyze_sentiment(text):
+    """
+    Analyzes the sentiment of a given text using TextBlob.
+
+    Args:
+        text (str): The input text to analyze.
+
+    Returns:
+        tuple: A tuple containing polarity and subjectivity.
+               Polarity ranges from -1.0 (negative) to 1.0 (positive).
+               Subjectivity ranges from 0.0 (objective) to 1.0 (subjective).
+    """
+    analysis = TextBlob(text)
+    return analysis.sentiment.polarity, analysis.sentiment.subjectivity
+
+def main():
+    print("Sentiment Analysis Script")
+    print("-------------------------")
+
+    while True:
+        user_input = input("Enter text to analyze (or 'quit' to exit): ")
+        if user_input.lower() == 'quit':
+            break
+
+        if not user_input.strip():
+            print("Please enter some text.")
+            continue
+
+        polarity, subjectivity = analyze_sentiment(user_input)
+
+        print(f"\nText: \"{user_input}\"")
+        print(f"Polarity: {polarity:.2f} (closer to 1.0 is positive, closer to -1.0 is negative)")
+        print(f"Subjectivity: {subjectivity:.2f} (closer to 0.0 is objective, closer to 1.0 is subjective)")
+
+        if polarity > 0.05:
+            sentiment_label = "Positive"
+        elif polarity < -0.05:
+            sentiment_label = "Negative"
+        else:
+            sentiment_label = "Neutral"
+        print(f"Overall Sentiment: {sentiment_label}\n")
+
+if __name__ == "__main__":
+    main()
