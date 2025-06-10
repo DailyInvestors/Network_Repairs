@@ -172,7 +172,17 @@ chrome://net-internals/#events
 56. General Everything 
 chrome://network/#general
 
+57. Network Logs
+chrome://network#logs
 
+58. Debugging
+chrome://network#logs
+
+59. HSTS Security 
+https://www.chromium.org/hsts
+
+60. Export Data
+chrome://net-export
 
 
 we appreciate any and all donations for our work. This will all eventually turned into a GitHub site. Until then we appreciate any supprt to be one of the Few Cyber Security Specialist that is also a Google Expert.
