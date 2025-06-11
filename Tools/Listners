@@ -1,0 +1,101 @@
+Description: A variety of ways to 👂.
+
+
+ 1.netstat (Network Statistics):
+   * Purpose: Shows active connections, listening ports, routing tables, and interface statistics.
+   * Common Use: netstat -tulnp (Linux) or netstat -ano (Windows).
+   * t: TCP connections, u: UDP connections, l: Listening sockets, n: Numerical addresses, p: Show process ID/name, a: All connections, o: Show owner PID (Windows).
+ 
+ 
+2.ss (Socket Statistics):
+   * Purpose: A newer, faster, and more powerful alternative to netstat on Linux.
+   * Common Use: ss -tulnp (similar flags to netstat).
+ * lsof (List Open Files):
+   * Purpose: Can list open files, and since network connections are treated as files, it can show what processes have specific ports open.
+   * Common Use: lsof -i :<port> (e.g., lsof -i :80) or lsof -i -P -n (list all internet files with numerical ports/addresses).
+ * fuser:
+   * Purpose: Identifies processes using specific files or sockets.
+   * Common Use: fuser -n tcp <port> (e.g., fuser -n tcp 80) or fuser -n udp <port>.
+ 
+
+3. Task Manager (Windows GUI):
+   * Purpose: The "Performance" or "Networking" tabs can show active network usage. The "Details" tab with "PID" and then using netstat -ano | findstr <PID> can link processes to ports.
+ * Resource Monitor (Windows GUI):
+   * Purpose: Provides a detailed view of network activity, including listening ports and active TCP connections with their associated processes.
+   * Access: Search "Resource Monitor" in Start Menu.
+
+
+4. Get-NetTCPConnection (PowerShell - Windows):
+   * Purpose: PowerShell cmdlet to get information about TCP connections.
+   * Common Use: Get-NetTCPConnection or Get-NetTCPConnection -State Listen.
+ * Get-NetUDPEndpoint (PowerShell - Windows):
+   * Purpose: PowerShell cmdlet to get information about UDP endpoints.
+ 
+
+
+ 5. Get-NetUDPEndpoint.
+ * iptables (Linux Firewall Rules):
+   * Purpose: While primarily a firewall, examining iptables rules (sudo iptables -L -n -v) can reveal which ports are allowed or blocked for listening or outbound connections, indirectly indicating what might be in use or attempted.
+ * auditd (Linux Auditing System):
+   * Purpose: Configurable to log specific system calls, including network-related ones (like socket, bind, connect). Highly detailed but complex to set up and analyze.
+   * Common Use: Configuring rules in /etc/audit/audit.rules and viewing logs with ausearch.
+
+
+6. nmap (Network Mapper):
+   * Purpose: The gold standard for port scanning. Can determine if a port is open, closed, or filtered, identify services, and even detect OS.
+   * Common Use: nmap -p <port> <target_IP>, nmap -sT -p <port> <target_IP> (TCP connect scan), nmap -sU -p <port> <target_IP> (UDP scan).
+
+
+ 7. nc (Netcat):
+   * Purpose: A versatile network utility often called the "TCP/IP Swiss Army knife." Can establish raw TCP/UDP connections, listen on ports, and transfer data.
+   * Common Use: nc -zv <target_IP> <port> (verbose zero-I/O scan for open port), nc <target_IP> <port> (connect to port), nc -l -p <port> (listen on a local port).
+  
+
+8.telnet:
+   * Purpose: Primarily for remote login, but useful for quickly testing if a TCP port is open and viewing banners.
+   * Common Use: telnet <target_IP> <port> (e.g., telnet example.com 80). If the port is open, you'll see a connection.
+ 
+
+9.10. curl / wget (for HTTP/HTTPS ports):
+   * Purpose: Command-line tools for transferring data with URLs. Excellent for testing web servers on HTTP/HTTPS ports.
+   * Common Use: curl http://<target_IP>:<port> or wget http://<target_IP>:<port>. Will show if a web server is responding.
+
+
+11.  Python's socket module:
+   * Purpose: Programmatically create network sockets to connect to or listen on ports. Highly flexible for custom scripts.
+   * Common Use (Python script snippet for a simple port check):
+     import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+result = sock.connect_ex(('<target_IP>', <port>))
+if result == 0:
+    print("Port is open")
+else:
+    print("Port is closed/filtered")
+sock.close()
+
+ 12. PowerShell's Test-NetConnection (Windows):
+   * Purpose: Modern cmdlet to test network connectivity, including port reachability.
+   * Common Use: Test-NetConnection -ComputerName <target_IP> -Port <port>.
+ 
+
+13. hping3:
+   * Purpose: A network packet crafter and analyzer, similar to ping but much more versatile. Can send custom TCP/UDP packets to probe ports.
+   * Common Use: sudo hping3 -S -p <port> <target_IP> (SYN scan for TCP).
+ 
+
+14. tcpdump / Wireshark (Packet Sniffing):
+   * Purpose: These tools capture actual network traffic passing through an interface. While not directly "listening on a port" in the sense of establishing a connection, they passively listen to all data on the wire, including data going to/from specific ports.
+   * Common Use: sudo tcpdump -i <interface> port <port> (e.g., sudo tcpdump -i eth0 port 80) or using Wireshark's GUI to apply display filters (e.g., tcp.port == 80).
+ 
+
+15. tshark:
+   * Purpose: The command-line version of Wireshark. Allows for powerful packet capture and analysis from the terminal.
+   * Common Use: sudo tshark -i <interface> -f "tcp port <port>".
+ * Browser-based Tools (e.g., developer console):
+   * Purpose: For web traffic specifically, a browser's developer console (F12, Network tab) will show all HTTP/HTTPS requests and responses, revealing what ports are being contacted (usually 80 or 443) and the success/failure of those connections.
+
+
+ Remember to always act ethically and legally when examining network ports, especially on remote systems you do not own or have explicit permission to test.
+
+
+We Thank You Advance for any and All Donations to help support our Research.
