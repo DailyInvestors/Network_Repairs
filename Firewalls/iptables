@@ -42,4 +42,102 @@ sudo iptables -A INPUT -m limit --limit 5/min -j LOG --log-prefix"IPTables-Dropp
 sudo apt-get install netfilter-persistent save
 
 
-There are tons of more rules, forwarding requests, tunnels, proxies. However the basics are the fundamentals to ensure are ran on Any System.
+~~~ Note the following rules, are to defend against Key attacks, or go into a Paranoid state to Ensure know one is snopping in on your system, projects, etc. Combining these with a Proxy, VPN, and tor in the background this can help aid in the Privacy we all Love and Deserve.
+
+
+1. Deny All By Default 
+
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT DROP
+
+2. Add Legitimate Traffic 
+
+sudo iptables -A INPUT -m conntrack --cstate ESTABLISHED,RELATED -j ACCEPT
+
+sudo iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+3. Install Tor
+
+apt install tor
+  3.1 sudo tor & "Runs in Background"
+
+4. Enable IP Forwarding. Depending on system, this process may vary.This is done by setting the net.iov4.ip_forward in /etc/sysctl.conf.
+
+echo 1 | sudo tee /proc/sys/net/ip 4/ip_forward
+sudo sysctl -p
+
+Example Forward Rule:
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 555.555.555.5/24
+sudo iptables -A FORWARD -p tcp -d 555.555.555.5 --dport 80 -m conntrack --ctstate NEW, ESTABLISHED,RELATED -j ACCEPT
+
+5. PostRouting 
+
+sudi iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE 
+
+6. RATE Limiting: Protecting against attacks.
+
+sudo iptables -A INPUT -p tcp --dport 22 -m state --state NEE -m limit --limit 2/minute --limit-burst 5 -j ACCEPT
+
+sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+
+7. Track Connections 
+
+sudo iptables -A INPUT -p --dport 22 -m conntrack --ctstate NEW -m recent --set --name SSH_ATTACKS -j ACCEPT 
+
+sudo iptables -A INPUT -p --dport 22 -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 6 --name SSH_ATTACKS -j DROP
+
+
+8. Anti-Spoofing
+First continue to use all the rules above, enforcing and ENSURE yours rules are working, and local conditions are acceptable with your tools and services.
+
+Block Invalid Packets
+sudi iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+
+DROP PACKETS BY HOST 
+sudi iptables -A INPUT -i eth0 -s 05.5.5.5/5 -j DROP
+
+YOU can enhance forward rules, reverse proxy, logging, ssh capture, transfer captures and force requests to go through UFW as well. 
+
+
+Drop Fragments
+sudo iptables -A -f -j DROP
+
+BLOCK PROTOCOLS 
+sudo iptables -A INPUT -p 47 -j DROP
+
+DROP AUTHENTICATION HEADER
+audi iptables -A INPUT -p 50 -j DROP
+
+DROP XMAS ATTACKS 
+sudo iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP 
+
+DROP NULL BYTES
+sudi iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+
+DROP SYN FLOOD ATTACKS 
+sudo iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+
+DROP SYN/RST ATTACKS
+sudo iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP 
+
+DROP FIN/RST
+sudo iptables -A INPUT -p tcp --tcp-flags FIN,RST FIN,RST -j DROP 
+
+DROP ACK/FIN ATTACKS 
+sudo iptables -A INPUT -p tcp --tcp-flags ACK,FIN ACK,FIN -j FIN DROP 
+
+DROP ACK/PSH ATTACKS
+sudo iptables -A INPUT -p tcp --tcp-flags ACK,PSH ACK,PSH PSH -j DROP
+
+
+LIMIT NEW TCP CONNECTIONS 
+sudi iptables -A INPUT -p tcp --syn -m limit 100/second --limit-burst 200 -j ACCEPT 
+
+
+LOG AND DROP
+sudi iptables -A INPUT -p tcp --syn-j LOG --log-prefix"SYN FLOOD DROP: " --log-level info
+
+
+Note their are still tons of rules you can add or customize 
+ However using these is a way for a Very Good Start.
