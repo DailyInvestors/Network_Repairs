@@ -26,10 +26,10 @@ sudo iptables -A OUTPUT -o lo -j ACCEPT
 sudo iptables -A OUTPUT -j ACCEPT
 
 6. Allow incoming HTTP
-sudi iptables -A INPUT -p tcp --dport 80 -j ACCEPT 
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT 
 
 7. Allow incoming HTTPS
-sudi iptables -A input -p tcp --dport 443 -j ACCEPT 
+sudo iptables -A input -p tcp --dport 443 -j ACCEPT 
 
 NOTE: All ports have both Tcp and UDP. Apply rules to both sets.
 
@@ -73,7 +73,7 @@ sudo iptables -A FORWARD -p tcp -d 555.555.555.5 --dport 80 -m conntrack --ctsta
 
 5. PostRouting 
 
-sudi iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE 
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE 
 
 6. RATE Limiting: Protecting against attacks.
 
@@ -107,13 +107,13 @@ BLOCK PROTOCOLS
 sudo iptables -A INPUT -p 47 -j DROP
 
 DROP AUTHENTICATION HEADER
-audi iptables -A INPUT -p 50 -j DROP
+sudo iptables -A INPUT -p 50 -j DROP
 
 DROP XMAS ATTACKS 
 sudo iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP 
 
 DROP NULL BYTES
-sudi iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+sudo iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
 
 DROP SYN FLOOD ATTACKS 
 sudo iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
@@ -132,11 +132,11 @@ sudo iptables -A INPUT -p tcp --tcp-flags ACK,PSH ACK,PSH PSH -j DROP
 
 
 LIMIT NEW TCP CONNECTIONS 
-sudi iptables -A INPUT -p tcp --syn -m limit 100/second --limit-burst 200 -j ACCEPT 
+sudo iptables -A INPUT -p tcp --syn -m limit 100/second --limit-burst 200 -j ACCEPT 
 
 
 LOG AND DROP
-sudi iptables -A INPUT -p tcp --syn-j LOG --log-prefix"SYN FLOOD DROP: " --log-level info
+sudo iptables -A INPUT -p tcp --syn-j LOG --log-prefix"SYN FLOOD DROP: " --log-level info
 
 
 Note their are still tons of rules you can add or customize 
