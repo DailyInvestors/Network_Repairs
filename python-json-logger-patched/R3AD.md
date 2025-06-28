@@ -1,32 +1,30 @@
-## Recommended Repository
-**Repo:** [https://github.com/madzak/python-json-logger](https://github.com/madzak/python-json-logger)  
-**Language:** Python  
-**Recent Issue:** Vulnerability due to an insecure dependency (`msgspec-python313-pre`)—see [details here](https://cybersecuritynews.com/popular-python-library-vulnerability/).
+# python-json-logger-patched
 
----
+A security-hardened, actively-maintained fork of [python-json-logger](https://github.com/madzak/python-json-logger).
 
-## How You Can Patch & Upgrade
+## 🚀 Why This Fork?
 
-1. **Dependency Review:** Double-check for any insecure or deprecated dependencies in `requirements.txt` or `setup.py`.
-2. **Input Sanitization:** Improve how log data is sanitized/encoded before being output as JSON—look for places where user input may be logged without proper escaping.
-3. **Add Security Tests:** Contribute tests that ensure malicious input can’t break or escape the logger format.
-4. **Update Documentation:** Propose best security practices for users of the logger.
+- The original project is no longer maintained.
+- Log injection and control character abuse are real threats.
+- This fork provides modern Python compatibility, input sanitization, and regular dependency upgrades.
 
----
+## 🔒 Security Improvements
 
-## Example Bug Report & Patch Suggestion
+- **Input Sanitization:** Strips control characters and encodes dangerous sequences in all log fields.
+- **Defense-in-Depth:** Handles nested structures (dicts/lists), not just strings.
+- **Security Tests:** Includes tests for log injection, malicious payloads, and malformed data.
+- **Modern Python Support:** Fully tested on Python 3.7+.
 
-**Title:** Improve Input Sanitization in Log Formatter for Security
+## 🛠️ Usage
 
-**Body:**
-> While reviewing the code, I noticed that user-supplied log messages or metadata are not explicitly sanitized before being serialized to JSON. This could potentially allow for log injection or other attacks if downstream log consumers are not robust.  
-> 
-> **Suggested Patch:**  
-> - Implement input sanitization or validation before writing logs.
-> - Add tests for malicious payloads to ensure safe handling.
-> 
-> This will further harden ant current Library that uses these functions.
+```python
+import logging
+from pythonjsonlogger_patched import JsonFormatter
 
-If not feel free to fork or clone our Free a Public Model.
-We Gladly accept any and all donation for our work. Email us or Contact GitHub through these matters.
+logger = logging.getLogger()
+logHandler = logging.StreamHandler()
+formatter = JsonFormatter()
+logHandler.setFormatter(formatter)
+logger.addHandler(logHandler)
 
+logger.info("User login attempt", extra={"user": "test@evil.com\n<script>alert(1)</script>"})
