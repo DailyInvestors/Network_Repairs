@@ -1,0 +1,297 @@
+# Flush all existing rules
+sudo iptables -F
+sudo iptables -X
+sudo iptables -t nat -F
+sudo iptables -t nat -X
+sudo iptables -t mangle -F
+sudo iptables -t mangle -X
+
+# Set default policies to DROP (most secure starting point)
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT DROP
+
+# Allow loopback traffic
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A OUTPUT -o lo -j ACCEPT
+
+# Allow established and related outgoing connections (for responses to your outgoing traffic)
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow your outgoing connections (e.g., Browse, updates)
+# You'll need to be more specific here depending on what you want to allow.
+# Example: Allow outgoing HTTP/HTTPS
+sudo iptables -A OUTPUT -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+# Example: Allow DNS
+sudo iptables -A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+
+# Allow SSH from specific IP (if you need to administer remotely)
+# Replace YOUR_TRUSTED_IP with the actual IP address
+# sudo iptables -A INPUT -p tcp --dport 22 -s YOUR_TRUSTED_IP -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+# If you need to allow incoming SSH from anywhere (less secure):
+# sudo iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+
+# Log dropped packets (optional, but highly recommended for debugging and security analysis)
+# Be careful with logging, it can fill up your logs quickly if there's a lot of blocked traffic.
+# sudo iptables -N LOGGING
+# sudo iptables -A INPUT -j LOGGING
+# sudo iptables -A LOGGING -m limit --limit 2/min -j LOG --log-prefix "IPTABLES_DROP_IN: " --log-level 7
+# sudo iptables -A LOGGING -j DROP
+
+# Save your iptables rules (on Debian/Ubuntu systems, you'd typically install `iptables-persistent`)
+# sudo apt-get install iptables-persistent
+# sudo netfilter-persistent save
+~~~~~~~~~~~~~~~~~~~~~~🤖~~~~~~~~~~
+Step 1.
+# Flush all existing rules from all tables
+sudo iptables -F
+sudo iptables -X
+sudo iptables -t nat -F
+sudo iptables -t nat -X
+sudo iptables -t mangle -F
+sudo iptables -t mangle -X
+
+# Set default policies to DROP for INPUT, FORWARD.
+# OUTPUT can be ACCEPT for now if you want to allow all outgoing traffic initially,
+# or DROP if you want to explicitly define all outgoing traffic too.
+# For security, setting OUTPUT to DROP and then explicitly allowing is best.
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT ACCEPT # Start with ACCEPT for OUTPUT to avoid immediately locking yourself out
+                               # You can change this to DROP later and add specific OUTPUT rules
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~🤖
+Step 2
+# 1. Allow loopback traffic (essential for internal communication)
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A OUTPUT -o lo -j ACCEPT
+
+# 2. Allow established and related connections (important for responses to your outgoing traffic)
+# This allows replies to your connections and related traffic like FTP data channels.
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# 3. Allow SSH (Port 22) - Critical for remote management.
+# Rate limit SSH to prevent brute-force attacks.
+# This rule allows 3 new SSH connections per minute per source IP, with a burst of 5.
+# Adapt --dport 22 if your SSH server listens on a different port.
+sudo iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m limit --limit 3/minute --limit-burst 5 -j ACCEPT
+
+# 4. Allow HTTP (Port 80) and HTTPS (Port 443) - If your server hosts web services.
+sudo iptables -A INPUT -p tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+
+# 5. Allow DNS (if your server needs to resolve names)
+# Outgoing DNS queries (from your server to external DNS servers)
+sudo iptables -A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+# If your server *is* a DNS server and needs to receive incoming queries:
+# sudo iptables -A INPUT -p udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+# sudo iptables -A INPUT -p tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+
+# 6. Allow ICMP (Ping) - Useful for diagnostics, but can be a target for attacks.
+# Limit ICMP echo requests to prevent flood attacks.
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/second --limit-burst 5 -j ACCEPT
+sudo iptables -A OUTPUT -p icmp -j ACCEPT # Allow outgoing pings and replies
+
+~~~~~🚀~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 3 Anti-Attack
+# 1. SYN Flood Protection
+# Limits the rate of new connection attempts (SYN packets) that don't belong to an established connection.
+# This helps prevent SYN flood attacks. Adjust the rate and burst as needed.
+# Too low and legitimate connections might be dropped, too high and it's less effective.
+sudo iptables -A INPUT -p tcp --syn -m conntrack --ctstate NEW -m limit --limit 50/second --limit-burst 200 -j ACCEPT
+
+# 2. Port Scan Detection (Basic)
+# Logs and drops packets from hosts attempting to scan multiple ports quickly.
+# This is a very basic detection; dedicated intrusion detection systems are better.
+# This chain specifically for new connections to ports that are NOT explicitly opened.
+sudo iptables -N PORT_SCAN_DROP
+sudo iptables -A PORT_SCAN_DROP -m limit --limit 1/hour -j LOG --log-prefix "IPTABLES_PORT_SCAN: " --log-level 7
+sudo iptables -A PORT_SCAN_DROP -j DROP
+
+# Jump to PORT_SCAN_DROP if a new connection comes to any port not explicitly allowed above.
+# This rule must come AFTER all your ALLOW rules for specific ports (SSH, HTTP, HTTPS).
+# Otherwise, it might block legitimate connections.
+# This rule is tricky: it essentially says "if a new connection arrives and hasn't been ACCEPTed yet,
+# then consider it for port scanning."
+# A more robust approach might be to block IPs that hit a certain number of dropped packets.
+# This simple version just drops additional new connections.
+
+# (Self-correction: A simple drop for unallowed NEW connections is sufficient, the port scan chain below
+# is better for *logging* attempts against closed ports rather than a general scan-detection.
+# For new connections to any other port, they will be dropped by the default policy after specific accepts.)
+
+# Alternative (and more common) approach for port scanning:
+# Use the recent module to track source IPs that attempt connections to many different ports or
+# too many new connections to closed ports.
+# This is more advanced and requires careful tuning.
+
+# Example using recent module for basic "too many new connections" defense (can act as a port scan mitigation)
+# This rule adds source IPs to a list if they try to initiate a new connection.
+# If they initiate more than 20 connections in 60 seconds, they are dropped.
+# This should generally come BEFORE your service-specific rules for better effect.
+sudo iptables -A INPUT -p tcp -m state --state NEW -m recent --set --name ATTACK_LIST --rsource
+sudo iptables -A INPUT -p tcp -m state --state NEW -m recent --update --seconds 60 --hitcount 20 --name ATTACK_LIST --rsource -j DROP
+sudo iptables -A INPUT -p udp -m state --state NEW -m recent --set --name ATTACK_LIST --rsource
+sudo iptables -A INPUT -p udp -m state --state NEW -m recent --update --seconds 60 --hitcount 20 --name ATTACK_LIST --rsource -j DROP
+
+
+# 3. ICMP Flood Protection (Ping Flood)
+# Limits the rate of incoming ICMP messages (like echo requests).
+sudo iptables -A INPUT -p icmp -m limit --limit 1/second --limit-burst 5 -j ACCEPT
+
+# 4. Invalid Packet Handling
+# Drop packets that are not part of an existing connection and are not new valid connections.
+# This helps drop malformed packets or packets that don't fit the state machine.
+sudo iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+
+# 5. Block Null Packets (Christmas Tree, Xmas, or Nmap -sX scan)
+# Packets with all TCP flags set.
+sudo iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+sudo iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+
+# 6. Block SYN/FIN Packets
+# SYN and FIN flags set simultaneously - an unusual and potentially malicious packet.
+sudo iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+
+# 7. Block FIN/RST/PSH/ACK/URG without SYN (Stealth Scans/Evasion)
+# This targets various forms of stealth scans or packets trying to evade state tracking.
+sudo iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+sudo iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+sudo iptables -A INPUT -p tcp --tcp-flags SYN,ACK SYN -j DROP # SYN without ACK is typically a new connection
+# The above line `sudo iptables -A INPUT -p tcp --tcp-flags SYN,ACK SYN -j DROP` is tricky.
+# It means SYN is set, but ACK is not. This is normal for a NEW connection.
+# If your default SYN flood protection is in place, this rule might be redundant or even problematic.
+# Usually, you'd want to drop packets with specific *combinations* of flags that are invalid.
+# For example, `sudo iptables -A INPUT -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP` (covered by ALL ALL)
+# A common one is `FIN without ACK`
+sudo iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j DROP
+
+# 8. New connection rate limit per source IP (general)
+# Limit the rate of all *new* incoming connections per source IP, regardless of port.
+# This helps against general connection floods from a single source.
+sudo iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m limit --limit 60/minute --limit-burst 30 -j ACCEPT
+sudo iptables -A INPUT -p udp -m conntrack --ctstate NEW -m limit --limit 60/minute --limit-burst 30 -j ACCEPT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Step 4 Logging
+
+# Create a new chain for logging
+sudo iptables -N LOGGING
+
+# Log packets that reach the LOGGING chain (limited to prevent log floods)
+sudo iptables -A LOGGING -m limit --limit 2/min -j LOG --log-prefix "IPTABLES_DROP: " --log-level 7
+
+# Jump to LOGGING for any packets that fall through all other rules (i.e., will be dropped by default policy)
+# This rule should be the penultimate rule in your INPUT chain, just before the final DROP.
+# No, it should be the last rule before the default DROP policy takes effect.
+# Place these *before* your final `DROP` if you change your default policy to `ACCEPT` later,
+# but if your default policy is `DROP`, then these packets are already dropped.
+# So, the best place for this logging is before the implicit drop from the policy, or
+# at the end of specific chains that you want to log drops from.
+
+# The most common way to log is to append a log rule *before* the final DROP for a specific type of traffic
+# or just before the chain ends where the policy will drop it.
+
+# Example: Log all remaining dropped packets in the INPUT chain
+# This must be the last rule in your INPUT chain before the default policy takes over.
+sudo iptables -A INPUT -j LOGGING
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~🚀
+Step 5 BackUps
+sudo apt-get update
+sudo apt-get install iptables-persistent
+
+# After installation, run this to save your current rules:
+sudo netfilter-persistent save
+
+# To reload them later (e.g., after a manual flush):
+sudo netfilter-persistent reload
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Paranoid Mode- Server may Malfunction 
+
+#!/bin/bash
+
+# WARNING: Running this script can lock you out of your server if not configured correctly.
+# Use with extreme caution on remote machines.
+
+# --- 1. Flush Existing Rules and Set Default Policies ---
+echo "Flushing existing iptables rules..."
+sudo iptables -F
+sudo iptables -X
+sudo iptables -t nat -F
+sudo iptables -t nat -X
+sudo iptables -t mangle -F
+sudo iptables -t mangle -X
+
+echo "Setting default policies to DROP for INPUT, FORWARD. OUTPUT to ACCEPT."
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT ACCEPT # You might want to change this to DROP and add specific OUTPUT rules later
+
+# --- 2. Essential Basic Rules ---
+echo "Adding essential basic rules (loopback, established/related, SSH, HTTP/S, DNS)..."
+# Loopback
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A OUTPUT -o lo -j ACCEPT
+
+# Established and Related Connections
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# SSH (Port 22) - Rate limited
+sudo iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -m limit --limit 3/minute --limit-burst 5 -j ACCEPT
+
+# HTTP (Port 80)
+sudo iptables -A INPUT -p tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
+
+# HTTPS (Port 443)
+sudo iptables -A INPUT -p tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+
+# Outgoing DNS
+sudo iptables -A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+
+# ICMP (Ping) - Rate limited
+sudo iptables -A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/second --limit-burst 5 -j ACCEPT
+sudo iptables -A OUTPUT -p icmp -j ACCEPT
+
+# --- 3. Anti-Attack and Flood Mitigation Rules ---
+echo "Adding anti-attack and flood mitigation rules..."
+
+# SYN Flood Protection (General new connection rate limit)
+sudo iptables -A INPUT -p tcp --syn -m conntrack --ctstate NEW -m limit --limit 50/second --limit-burst 200 -j ACCEPT
+
+# Basic "Too many new connections" per source IP (can mitigate basic port scans/floods)
+sudo iptables -A INPUT -p tcp -m state --state NEW -m recent --set --name ATTACK_LIST --rsource
+sudo iptables -A INPUT -p tcp -m state --state NEW -m recent --update --seconds 60 --hitcount 20 --name ATTACK_LIST --rsource -j DROP
+sudo iptables -A INPUT -p udp -m state --state NEW -m recent --set --name ATTACK_LIST --rsource
+sudo iptables -A INPUT -p udp -m state --state NEW -m recent --update --seconds 60 --hitcount 20 --name ATTACK_LIST --rsource -j DROP
+
+# Invalid Packet Handling
+sudo iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+
+# Block Null Packets
+sudo iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+
+# Block SYN/FIN
+sudo iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+
+# Block FIN without ACK (common stealth scan)
+sudo iptables -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j DROP
+
+# --- 4. Logging Dropped Packets ---
+echo "Setting up logging for dropped packets..."
+sudo iptables -N LOGGING
+sudo iptables -A LOGGING -m limit --limit 2/min -j LOG --log-prefix "IPTABLES_DROP: " --log-level 7
+sudo iptables -A INPUT -j LOGGING # All unhandled INPUT packets go to LOGGING before default DROP
+
+echo "Iptables rules applied. Please test your connectivity."
+echo "Remember to save rules for persistence if you're happy with them:"
+echo "  For Debian/Ubuntu: sudo netfilter-persistent save"
+echo "  For CentOS/RHEL: sudo iptables-save > /etc/sysconfig/iptables (after installing iptables-services)"
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~🙏~~~~~~~
+
+
+
+
