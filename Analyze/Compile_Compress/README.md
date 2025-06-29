@@ -3,7 +3,7 @@ How to Use the Script:
    Save the code above into a file named process.sh.
  * Make it Executable:
    Open your terminal and navigate to the directory where you saved the file. Then run:
-   chmod +x process.sh
+   chmod +x compiler.sh
 
  * Run with Options:
    * Display Help:
