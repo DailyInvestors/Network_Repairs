@@ -1,0 +1,2 @@
+••InPlace File Editing:
+sed -i.bak -e 's/old/new/g' -e '/^#/d' -e '5,10d' -e 'a\new_line' -e '12i\inserted' file && chmod --reference=file.bak file
