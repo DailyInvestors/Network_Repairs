@@ -13,3 +13,7 @@ ifuo eth0
 
 ••To start all Network Interfaces:
 # /etc/init.d/network start
+
+••For Security to secure your Services make this file immunized.
+# chattr +I /etc/services
+🚨This will prevent unauthorized access!
