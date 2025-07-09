@@ -69,4 +69,7 @@ X11R6
 local
 dict
 X11
+
+⚠️For Best Security Practices, After all instation PURGE all Compilers. You don't need them, unless you do.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
