@@ -32,3 +32,41 @@ lba32
 
 🚨Note: RPM has default Foo Packages.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+••When installing any package, check the signature with
+RPM --checkaog --nogpg "file"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~👁️‍🗨️~~~~~~~~~~~🧿~~~~~~~~
+••To start and Stop HTTP Server••
+# /etc/init.d/httpd start 
+# /etc/init.d/https stop
+~~~~~~~~~~~~~~~^^^^^^^^^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+••Man Pages not only can teach, but can also be read by anyone else on the Internet. Basically a backdoor into your System••
+
+•• To remove all DOCs from your Server:
+cd /use/share/doc/
+sudo rm -rf *
+
+••Unnecessary Directories
+exports
+print cap
+LDAP.conf
+krn.conf
+yp.conf
+hosts.allow
+hosts.deny
+csh.login
+csh.cshrc
+fstab.REVOKE
+pam_smb.conf
+xinetd.d
+all opts
+X11
+nis
+yp
+lib/games
+lpd
+Python1.5
+X11R6
+local
+dict
+X11
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
