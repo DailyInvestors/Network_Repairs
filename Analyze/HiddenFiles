@@ -1,0 +1,4 @@
+••To search for Hidden Files:
+find / ~name ".. " -print -xdev
+
+find / ~name ".*" -print -xdev | cat -v
