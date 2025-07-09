@@ -1,0 +1,15 @@
+🧿👁️‍🗨️
+  ^
+ .•°•.
+
+•• To stop specific Network Devices: 
+ifdown eth0•••
+
+•• To start a specific Device: 
+ifuo eth0
+
+••Shutdown all Network Interfaces:
+# /etc/init.d/network stop
+
+••To start all Network Interfaces:
+# /etc/init.d/network start
