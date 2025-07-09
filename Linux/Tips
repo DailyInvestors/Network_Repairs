@@ -1,0 +1,12 @@
+Description: This folder will be designed for Basic Tips and Tricks for any Linux user. These Tips and tricks are designed from Basic to Advanced.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. It is a best practice when setting up a Linux System to create each Directory into a Single Partiton. Now with Windows and Google, you may have to recreate your Linux with a Partition Tool 
+/boot 5-10 MB
+/ 256 MB
+/usr 512MB
+/home 5700MB
+/var 256 MB
+/tmp 333MB
+Swap 512MB
+/chroot 256 MB
+/var/lib 1000MB
