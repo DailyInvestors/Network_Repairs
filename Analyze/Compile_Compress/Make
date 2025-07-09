@@ -1,0 +1,6 @@
+./configure
+make
+make install
+make depend
+strip
+chown
