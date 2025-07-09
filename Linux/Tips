@@ -17,3 +17,18 @@ Swap 512MB
 -----           ⚠️Swap☣️
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+••Partion Tools::
+dd
+Disk Druid
+disk
+Hyden BootCD
+Dr.Web
+
+••Boot Loaders••
+Grub
+Lilo
+Mbr
+lba32
+
+🚨Note: RPM has default Foo Packages.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
