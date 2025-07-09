@@ -1,0 +1,3 @@
+••Tip••
+Logs can be edited, hacked, bypasses, etc. But it is best to configure your system to print out your Important Logs. This way their is no physical way they can be edited. You can do this by editing:
+vi +24 /etc/rc.d/init.d/syslog
