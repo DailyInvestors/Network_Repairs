@@ -11,3 +11,9 @@ Swap 512MB
 /chroot 256 MB
 /var/lib 1000MB
 🚨 By Setting your Directories in a Separate partion, this stops and defends against DOS Attacks.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+🧿👁️‍🗨️.  Rule of Thumb: Avoid Using 
+  *
+-----           ⚠️Swap☣️
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
