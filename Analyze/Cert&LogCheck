@@ -1,4 +1,4 @@
-Description: A basic Certificate Log Transparency Check
+Description: A basic Certificate Log Transparency Check. This is beneficial for Google Cloud Clients to verify and monitor their Logs.
 
 
 dig +short ct.googleapis.com/logs/argon2023/ct/v1/get-entries?start=0 | jq -r '.entries[].leaf_cert | select(.subject.OU == "Security") | .fingerprint' | openssl x509 -fingerprint -noout -in {Cert goes Here}
