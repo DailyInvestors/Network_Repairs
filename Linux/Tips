@@ -77,3 +77,13 @@ X11
 🚨 To test your own Security, Best Practice to run a Password Cracking Tool on your System once a week.
 
 🚨 Install a Password Protection Mechanism to help aid in Defense.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+🚨 Add a Timeout for all System Default Shells. This example is for Bash, my chosen language.
+vi /etc/profile
+Add in these following Lines:
+HOSTNAME= `/bin/hostname`
+HISTSIZE=1000
+TMOUT=7200
+We also Have to add the TMOOUT to our path and source 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
