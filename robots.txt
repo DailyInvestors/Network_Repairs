@@ -1,0 +1,39 @@
+User-agent: * (Applies to all web crawlers)
+User-agent: *
+Disallow: /wp-admin/             Disallow WordPress admin area
+Disallow: /wp-includes/          Disallow WordPress core files (not needed for indexing)
+Disallow: /wp-content/plugins/   Disallow plugin files (can be noisy)
+Disallow: /private-docs/         Disallow a directory of private documents
+allow: /search/               Disallow internal search results pages (often duplicate content)
+Disallow: /*?* # Disallow URLs with query parameters (e.g., ?id=123, ?sort=asc)
+Disallow: /*.json$               Disallow all JSON files
+Disallow: /*.xml$                Disallow all XML files (except sitemaps, handled by the Sitemap directive)
+Disallow: /*.pdf$                Disallow all PDF files
+allow: /tags/                 Disallow tag archives (can be low-value content)
+Disallow: /categories/?s=* # Disallow category pages with search parameters
+
+# Exception: Allow specific public plugins within the wp-content/plugins/ directory
+Allow: /wp-content/plugins/your-public-plugin-name/
+
+# Specific rules for Googlebot
+User-agent: Googlebot
+Disallow: /old-version/          Disallow an old version of the site only for Google
+Crawl-delay: 24 Hours                    Request Googlebot to wait 24 hours between fetches (use with caution, if server load is an issue)
+
+# Specific rules for Bingbot
+User-agent: Bingbot
+Disallow: /dev/                 
+
+# Block specific AI/LLM bots (if you want to prevent them from crawling for training)
+User-agent: ChatGPT-User
+Disallow: /
+User-agent: Google-Extended
+Disallow: /
+User-agent: CCBot
+Disallow: /
+
+# Specify your sitemap(s) - crucial for search engine discovery
+Sitemap: #https://www.yourdomain.com/sitemap.xml
+Sitemap: #https://www.yourdomain.com/blog/sitemap.xml # If you have multiple sitemaps
+
+🚨 Create Site Map before Finale Production.
