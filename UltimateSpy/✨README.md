@@ -45,6 +45,30 @@ Step 7. Run in the background.
 sudo nohup python3 system_monitoring_agent.py &
 
 
+
+✨👀 To check the logs for our agent. There are several different ways we can go about viewing the data.
+
+1.ls -l /var/log/system_monitoring_agent/
+
+2.sudo tail -f /var/log/system_monitoring_agent/ufw_log_monitor.log
+
+3. Or cat your log path.
+
+
+
+🛑 To stop our agent, we have a built in control. The control follows as:
+
+Step 1. Find it's Process ID.
+ps aux | grep system_monitoring_agent.py | grep -v grep
+
+Step 2. Now we must stop the Process.
+sudo kill <PID>
+
+
+
+⚠️This Agent provides a vast array of local system monitoring. This Agent works like no other when it comes to collecting and analyzing your data. This is designed to help keep us safe and secure 🔐 🙏.
+
+
 🚨 We appreciate any and all donations for our work. This helps out our Research and will continue our teachings and creations. Thank you for this.
 
 
