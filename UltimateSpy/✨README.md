@@ -20,7 +20,7 @@ These install commands may vary system to system depending on the process manage
 1. Create a Directory
 (mkdir -p UltimateSpy)
 
-2.Access the Directory.
+2. Access the Directory.
 (cd UltimateSpy)
 
 3. Create the File 
@@ -38,7 +38,7 @@ chmod +x monitor_king.py
 sudo ( Python or Python3 monitor_king.py )
 
 
-🚨We can also run this in the background with nohop. Depending on your system, you may need to install this. All the same above commands are the same, except at 
+🚨 We can also run this in the background with nohop. Depending on your system, you may need to install this. All the same above commands are the same, except at 
 step 7.
 
 Step 7. Run in the background.
@@ -46,9 +46,9 @@ sudo nohup python3 system_monitoring_agent.py &
 
 
 
-✨👀 To check the logs for our agent. There are several different ways we can go about viewing the data.
+✨ 👀 To check the logs for our agent. There are several different ways we can go about viewing the data.
 
-1.ls -l /var/log/system_monitoring_agent/
+1. ls -l /var/log/system_monitoring_agent/
 
 2.sudo tail -f /var/log/system_monitoring_agent/ufw_log_monitor.log
 
@@ -66,7 +66,7 @@ sudo kill <PID>
 
 
 
-⚠️This Agent provides a vast array of local system monitoring. This Agent works like no other when it comes to collecting and analyzing your data. This is designed to help keep us safe and secure 🔐 🙏.
+⚠️ This Agent provides a vast array of local system monitoring. This Agent works like no other when it comes to collecting and analyzing your data. This is designed to help keep us safe and secure 🔐 🙏.
 
 
 🚨 We appreciate any and all donations for our work. This helps out our Research and will continue our teachings and creations. Thank you for this.
