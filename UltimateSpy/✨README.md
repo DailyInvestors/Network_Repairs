@@ -8,7 +8,7 @@
 (sudo apt install Python Python3)
 
 2. We must install isotop.
-(sudo apt install -y iotop
+(sudo apt install -y isotop
 
 3. We must have watch installed.
 (sudo apt install watch) 
