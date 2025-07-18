@@ -59,9 +59,11 @@ sudo nohup python3 system_monitoring_agent.py &
 🛑 To stop our agent, we have a built in control. The control follows as:
 
 Step 1. Find it's Process ID.
+
 ps aux | grep system_monitoring_agent.py | grep -v grep
 
-Step 2. Now we must stop the Process.
+Step 2. Now we must stop this Process "PID".
+
 sudo kill <PID>
 
 
