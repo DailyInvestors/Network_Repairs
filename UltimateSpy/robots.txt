@@ -1,0 +1,5 @@
+   User-agent: *
+Allow: /
+
+Sitemap: https://dailyinvestors.github.io/networkrepairs/UltimateSpy/robots.txt
+
