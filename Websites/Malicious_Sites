@@ -62,6 +62,14 @@ endowmentoverhangutmost.com
 23.1 1/2 hours ago started attacking us.
 sync.pmbmonetize.live
 { Did a Passive Recon on them, truth be told there attacking People with Their Ports Open lol}
+(80/tcp    open     http
+135/tcp   filtered msrpc
+139/tcp   filtered netbios-ssn
+443/tcp   open     https
+445/tcp   filtered microsoft-ds
+593/tcp   filtered http-rpc-epmap
+30000/tcp open     ndmps)
+💎Just to show my Recon Skills, and no it doesn't violate any laws. But my opinion could be a Tester, could be malicious, could be the cops. So instead of filing a Report, got my wall of Shame. Now if mitre does something with this list, that's a different story lol
 
 
 
